@@ -1,0 +1,11 @@
+{
+    "name": "navyug-agri-trade-hub-root",
+    "private": true,
+    "scripts": {
+        "install": "echo 'Skipping root install'",
+        "build": "cd navyug-agri-trade-hub-main && npm install && npm run build && rm -rf ../dist && mv dist .."
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
