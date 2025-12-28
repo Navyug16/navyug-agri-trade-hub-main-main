@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { sendEmail } from "@/lib/emailService";
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -10,7 +11,9 @@ const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: '',
+    phone: '',
+    subject: '', // This acts as "Product"
+    quantity: '',
     message: ''
   });
 
@@ -24,13 +27,33 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
+      // Saving to Firestore in the requested structure
       await addDoc(collection(db, "inquiries"), {
         name: formData.name,
         email: formData.email,
-        product_interest: formData.subject,
+        phone: formData.phone,
+        product_interest: formData.subject, // Keeping internal name consistent, but it is the "product"
+        quantity: formData.quantity,
         message: formData.message,
         status: 'pending',
-        created_at: serverTimestamp()
+        created_at: serverTimestamp(),
+        time_string: new Date().toLocaleString() // Formatting requirement
+      });
+
+      // Send Notification to Admin
+      // Note: We use the same 'sendEmail' function but direct it to the Admin.
+      // Ideally, we would have a separate 'Notification' template, but we can reuse the generic one 
+      // if we format the 'message' field to contain all the details.
+
+      const adminEmail = 'navyugenterprise2003@gmail.com'; // Primary Admin Email
+
+      await sendEmail({
+        to_email: adminEmail,
+        to_name: 'Admin',
+        from_name: formData.name,
+        reply_to: formData.email,
+        subject: `New Inquiry: ${formData.subject}`,
+        message: `NEW WEBSITE INQUIRY\n\nName: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nProduct: ${formData.subject}\nQuantity: ${formData.quantity}\n\nMessage:\n${formData.message}\n\nTime: ${new Date().toLocaleString()}`
       });
 
       toast({
@@ -38,7 +61,7 @@ const ContactForm = () => {
         description: "We've received your message and will get back to you soon.",
       });
 
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', subject: '', quantity: '', message: '' });
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -67,6 +90,20 @@ const ContactForm = () => {
           />
         </div>
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            placeholder="+91 98765 43210"
+          />
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
           <input
             type="email"
@@ -78,9 +115,20 @@ const ContactForm = () => {
             placeholder="your@email.com"
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Quantity (Approx)</label>
+          <input
+            type="text"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            placeholder="e.g. 50 Tons"
+          />
+        </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Product / Subject</label>
         <input
           type="text"
           name="subject"
@@ -88,7 +136,7 @@ const ContactForm = () => {
           onChange={handleInputChange}
           required
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-          placeholder="Inquiry about products"
+          placeholder="Product Name or Inquiry Subject"
         />
       </div>
       <div>
