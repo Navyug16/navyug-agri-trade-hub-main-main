@@ -4,8 +4,6 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendEmail } from "@/lib/emailService";
-
-// ... imports
 import ThankYouPopup from './ThankYouPopup';
 
 const ContactForm = () => {
@@ -44,32 +42,34 @@ const ContactForm = () => {
         time_string: new Date().toLocaleString() // Formatting requirement
       });
 
-      // Send Notification to Admin
-      // Note: We use the same 'sendEmail' function but direct it to the Admin.
-      // Ideally, we would have a separate 'Notification' template, but we can reuse the generic one 
-      // if we format the 'message' field to contain all the details.
-
-      const adminEmail = 'navyugenterprise2003@gmail.com'; // Primary Admin Email
-
-      await sendEmail({
-        to_email: adminEmail,
-        to_name: 'Admin',
-        from_name: formData.name,
-        reply_to: formData.email,
-        subject: `New Inquiry: ${formData.subject}`,
-        message: `NEW WEBSITE INQUIRY\n\nName: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nProduct: ${formData.subject}\nQuantity: ${formData.quantity}\n\nMessage:\n${formData.message}\n\nTime: ${new Date().toLocaleString()}`
-      });
-
-      // Show Thank You Popup
+      // Show Thank You Popup immediately after saving to DB
       setShowThankYou(true);
 
-      // Also show toast as a fallback/notification
+      const formSnapshot = { ...formData }; // Capture for email
+      setFormData({ name: '', email: '', phone: '', subject: '', quantity: '', message: '' });
+
+      // Send Notification to Admin
+      // Non-blocking try-catch to ensure UI feedback is shown even if email fails
+      const adminEmail = 'navyugenterprise2003@gmail.com'; // Primary Admin Email
+
+      try {
+        await sendEmail({
+          to_email: adminEmail,
+          to_name: 'Admin',
+          from_name: formSnapshot.name,
+          reply_to: formSnapshot.email,
+          subject: `New Inquiry: ${formSnapshot.subject}`,
+          message: `NEW WEBSITE INQUIRY\n\nName: ${formSnapshot.name}\nPhone: ${formSnapshot.phone}\nEmail: ${formSnapshot.email}\nProduct: ${formSnapshot.subject}\nQuantity: ${formSnapshot.quantity}\n\nMessage:\n${formSnapshot.message}\n\nTime: ${new Date().toLocaleString()}`
+        });
+      } catch (emailError) {
+        console.error("Failed to send admin notification:", emailError);
+      }
+
       toast({
         title: "Message Sent",
         description: "We've received your message and will get back to you soon.",
       });
 
-      setFormData({ name: '', email: '', phone: '', subject: '', quantity: '', message: '' });
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
