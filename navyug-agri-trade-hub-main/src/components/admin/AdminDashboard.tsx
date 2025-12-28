@@ -42,7 +42,9 @@ interface Inquiry {
   phone?: string;
   product_interest?: string;
   message: string;
-  status: 'pending' | 'in_progress' | 'resolved';
+  status: 'pending' | 'in_progress' | 'closed_won' | 'closed_lost';
+  dealValue?: number;
+  notes?: string;
   created_at: string;
 }
 
@@ -368,7 +370,9 @@ const AdminDashboard = () => {
           phone: data.phone,
           product_interest: data.product_interest,
           message: data.message,
-          status: data.status,
+          status: data.status || 'pending',
+          dealValue: data.dealValue || 0,
+          notes: data.notes || '',
           created_at: data.created_at?.toDate().toISOString() || new Date().toISOString()
         } as Inquiry;
       });
@@ -593,103 +597,206 @@ const AdminDashboard = () => {
     }
   };
 
-  const updateInquiryStatus = async (id: string, status: 'pending' | 'in_progress' | 'resolved') => {
+  const handleUpdateInquiry = async (id: string, updates: Partial<Inquiry>) => {
     try {
       const inquiryRef = doc(db, "inquiries", id);
-      await updateDoc(inquiryRef, { status, updated_at: serverTimestamp() });
-      setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status } : inq));
-      toast({ title: "Status updated", description: "Inquiry status updated." });
+      const dataToUpdate = { ...updates, updated_at: serverTimestamp() };
+      await updateDoc(inquiryRef, dataToUpdate);
+
+      setInquiries(prev => prev.map(inq =>
+        inq.id === id ? { ...inq, ...updates } : inq
+      ));
+
+      toast({ title: "Inquiry Updated", description: "Changes saved successfully." });
     } catch (error) {
-      console.error("Error updating status: ", error);
-      toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
+      console.error("Error updating inquiry: ", error);
+      toast({ title: "Error", description: "Failed to update inquiry", variant: "destructive" });
     }
   };
 
   // Stats are derived from state
+  const [dateRange, setDateRange] = useState<'all' | 'today' | 'week' | 'month'>('all');
+
+  const getFilteredInquiries = () => {
+    if (dateRange === 'all') return inquiries;
+
+    const now = new Date();
+    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+
+    return inquiries.filter(inquiry => {
+      const inquiryDate = new Date(inquiry.created_at);
+      if (dateRange === 'today') {
+        return inquiryDate >= startOfDay;
+      }
+      if (dateRange === 'week') {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+        return inquiryDate >= weekAgo;
+      }
+      if (dateRange === 'month') {
+        const monthAgo = new Date(now);
+        monthAgo.setMonth(now.getMonth() - 1);
+        return inquiryDate >= monthAgo;
+      }
+      return true;
+    });
+  };
+
+  const filteredInquiries = getFilteredInquiries();
+
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Product', 'Message', 'Status', 'Deal Value', 'Date', 'Notes'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredInquiries.map(i => [
+        i.id,
+        `"${i.name}"`,
+        i.email,
+        i.phone,
+        `"${i.product_interest}"`,
+        `"${i.message?.replace(/"/g, '""')}"`, // Escape quotes
+        i.status,
+        i.dealValue || 0,
+        new Date(i.created_at).toLocaleDateString(),
+        `"${(i.notes || '').replace(/"/g, '""')}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `inquiries_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    toast({ title: "Export Complete", description: "Inquiries downloaded as CSV." });
+  };
+
+  // Stats are derived from filtered state
   const stats = {
-    totalInquiries: inquiries.length,
-    pendingInquiries: inquiries.filter(i => i.status === 'pending').length,
+    totalInquiries: filteredInquiries.length,
+    pendingInquiries: filteredInquiries.filter(i => i.status === 'pending').length,
     totalProducts: products.length,
-    resolvedInquiries: inquiries.filter(i => i.status === 'resolved').length,
+    totalEarnings: filteredInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0),
+    topProducts: filteredInquiries.reduce((acc: any, curr) => {
+      const product = curr.product_interest || 'Unknown';
+      acc[product] = (acc[product] || 0) + 1;
+      return acc;
+    }, {}),
+    closedInquiries: filteredInquiries.filter(i => i.status === 'closed_won').length,
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
 
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminHeader adminName={admin?.name} onLogout={logout} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AdminNavigation
-          activeTab={activeTab as 'overview' | 'inquiries' | 'products'}
-          onTabChange={setActiveTab}
-          pendingInquiries={stats.pendingInquiries}
-        />
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      {/* Sidebar Navigation */}
+      <AdminNavigation
+        activeTab={activeTab as 'overview' | 'inquiries' | 'products'}
+        onTabChange={setActiveTab}
+        pendingInquiries={stats.pendingInquiries}
+        onLogout={logout}
+        adminName={admin?.name}
+      />
 
-        {activeTab === 'overview' && (
-          <AdminOverview
-            stats={stats}
-            onInquiryClick={() => setActiveTab('inquiries')}
-            onProductClick={() => setActiveTab('products')}
-          />
-        )}
-        {activeTab === 'inquiries' && (
-          <div className="relative z-10">
-            <AdminInquiries inquiries={inquiries} onUpdateStatus={updateInquiryStatus} onDelete={handleDeleteInquiry} />
-          </div>
-        )}
-        {activeTab === 'products' && (
-          <div>
-            <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-bold">Products List</h2>
-              <div className="space-x-2">
-                {products.length === 0 && (
-                  <Button variant="outline" onClick={handleSeedProducts} disabled={loading}>
-                    <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-auto relative">
+        <div className="p-8">
+          {/* Header for content area */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 capitalize">{activeTab.replace('_', ' ')}</h1>
+
+            {/* Global Date Filter (Visible on Overview/Inquiries) */}
+            {(activeTab === 'overview' || activeTab === 'inquiries') && (
+              <div className="flex bg-white rounded-lg border p-1 gap-1 shadow-sm">
+                {(['all', 'month', 'week', 'today'] as const).map(range => (
+                  <Button
+                    key={range}
+                    variant={dateRange === range ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setDateRange(range)}
+                    className="capitalize text-xs h-8"
+                  >
+                    {range === 'all' ? 'All Time' : range}
                   </Button>
-                )}
-
-                <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-                  <DialogTrigger asChild>
-                    <Button onClick={startAddProduct}>
-                      <Plus className="mr-2 h-4 w-4" /> Add Product
-                    </Button>
-                  </DialogTrigger>
-                  <ProductDialogForm
-                    title="Add New Product"
-                    currentProduct={currentProduct}
-                    setCurrentProduct={setCurrentProduct}
-                    handleSaveProduct={handleSaveProduct}
-                    handleFileChange={handleFileChange}
-                    saving={saving}
-                    onCancel={() => setIsAddProductOpen(false)}
-                    isEditMode={false}
-                  />
-                </Dialog>
-
-                <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
-                  <ProductDialogForm
-                    title="Edit Product"
-                    currentProduct={currentProduct}
-                    setCurrentProduct={setCurrentProduct}
-                    handleSaveProduct={handleSaveProduct}
-                    handleFileChange={handleFileChange}
-                    saving={saving}
-                    onCancel={() => setIsEditProductOpen(false)}
-                    isEditMode={true}
-                  />
-                </Dialog>
+                ))}
               </div>
-            </div>
-            <AdminProducts
-              products={products}
-              onDelete={handleDeleteProduct}
-              onEdit={startEditProduct}
-              onMove={handleMoveProduct}
-            />
+            )}
+
+            {/* Export Button (Inquiries Only) */}
+            {activeTab === 'inquiries' && (
+              <Button variant="outline" size="sm" onClick={handleExportCSV}>
+                <Upload className="mr-2 h-4 w-4 rotate-180" /> Export CSV
+              </Button>
+            )}
           </div>
-        )}
-      </div>
+
+          {activeTab === 'overview' && (
+            <AdminOverview
+              stats={stats}
+              inquiries={filteredInquiries}
+              onInquiryClick={() => setActiveTab('inquiries')}
+              onProductClick={() => setActiveTab('products')}
+            />
+          )}
+
+          {activeTab === 'inquiries' && (
+            <div className="relative z-10">
+              <AdminInquiries inquiries={filteredInquiries} onUpdateInquiry={handleUpdateInquiry} onDelete={handleDeleteInquiry} />
+            </div>
+          )}
+
+          {activeTab === 'products' && (
+            <div>
+              <div className="flex justify-between mb-4">
+                <h2 className="text-xl font-bold sr-only">Products List</h2>
+                <div className="flex gap-2 w-full justify-end">
+                  {products.length === 0 && (
+                    <Button variant="outline" onClick={handleSeedProducts} disabled={loading}>
+                      <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
+                    </Button>
+                  )}
+
+                  <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={startAddProduct}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Product
+                      </Button>
+                    </DialogTrigger>
+                    <ProductDialogForm
+                      title="Add New Product"
+                      currentProduct={currentProduct}
+                      setCurrentProduct={setCurrentProduct}
+                      handleSaveProduct={handleSaveProduct}
+                      handleFileChange={handleFileChange}
+                      saving={saving}
+                      onCancel={() => setIsAddProductOpen(false)}
+                      isEditMode={false}
+                    />
+                  </Dialog>
+
+                  <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+                    <ProductDialogForm
+                      title="Edit Product"
+                      currentProduct={currentProduct}
+                      setCurrentProduct={setCurrentProduct}
+                      handleSaveProduct={handleSaveProduct}
+                      handleFileChange={handleFileChange}
+                      saving={saving}
+                      onCancel={() => setIsEditProductOpen(false)}
+                      isEditMode={true}
+                    />
+                  </Dialog>
+                </div>
+              </div>
+              <AdminProducts
+                products={products}
+                onDelete={handleDeleteProduct}
+                onEdit={startEditProduct}
+                onMove={handleMoveProduct}
+              />
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
