@@ -754,11 +754,7 @@ const AdminDashboard = () => {
             )}
 
             {/* Export Button (Inquiries Only) */}
-            {activeTab === 'inquiries' && (
-              <Button variant="outline" size="sm" onClick={handleExportCSV}>
-                <Upload className="mr-2 h-4 w-4 rotate-180" /> Export CSV
-              </Button>
-            )}
+
           </div>
 
           {activeTab === 'overview' && (

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
-import { Search, Filter, Download, Mail, ChevronRight, CheckCircle2, XCircle, Clock, AlertCircle, Send, FileText, History } from 'lucide-react';
+import { Search, Filter, Download, Mail, ChevronRight, CheckCircle2, XCircle, Clock, AlertCircle, Send, FileText, History, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { sendEmail } from '@/lib/emailService';
@@ -42,7 +42,9 @@ interface Inquiry {
 }
 
 interface AdminInquiriesProps {
+  inquiries?: Inquiry[]; // Accepted to fix lint, but component fetches its own for now
   onUpdateInquiry: (id: string, updates: Partial<Inquiry>) => void;
+  onDelete: (id: string) => void;
 }
 
 const EMAIL_TEMPLATES: Record<string, { label: string, subject: string, body: string }> = {
@@ -69,7 +71,7 @@ const EMAIL_TEMPLATES: Record<string, { label: string, subject: string, body: st
 };
 
 
-const AdminInquiries = ({ onUpdateInquiry }: AdminInquiriesProps) => {
+const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
   const { toast } = useToast();
   const { admin } = useAdminAuth(); // Get current admin info
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -415,7 +417,16 @@ const AdminInquiries = ({ onUpdateInquiry }: AdminInquiriesProps) => {
                           <span className="text-gray-400">-</span>
                         }
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right flex justify-end gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-red-600" onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm("Are you sure you want to delete this inquiry?")) {
+                            onDelete(inquiry.id);
+                            setInquiries(prev => prev.filter(i => i.id !== inquiry.id));
+                          }
+                        }}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleOpenInquiry(inquiry); }}>
                           View <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
