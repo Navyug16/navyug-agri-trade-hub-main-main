@@ -21,7 +21,8 @@ const RedirectHandler = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname !== '/') {
+    // Redirect to home on reload unless it's the admin page
+    if (location.pathname !== '/' && !location.pathname.startsWith('/admin')) {
       navigate('/', { replace: true });
     }
   }, []);
