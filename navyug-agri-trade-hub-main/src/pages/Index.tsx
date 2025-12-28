@@ -582,7 +582,7 @@ const Index = () => {
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li><a href="#home" className="hover:text-amber-400 transition-colors">Home</a></li>
                 <li><a href="#about" className="hover:text-amber-400 transition-colors">About Us</a></li>
-                <li><a href="#products" className="hover:text-amber-400 transition-colors">Products</a></li>
+                <li><Link to="/products" className="hover:text-amber-400 transition-colors">Products</Link></li>
                 <li><a href="#contact" className="hover:text-amber-400 transition-colors">Contact</a></li>
               </ul>
             </div>
@@ -590,11 +590,11 @@ const Index = () => {
             <div>
               <h4 className="text-lg font-semibold mb-6 text-white">Our Products</h4>
               <ul className="space-y-3 text-gray-400 text-sm">
-                <li><button onClick={scrollToProducts} className="hover:text-amber-400 transition-colors text-left">Groundnut & Peanut</button></li>
-                <li><button onClick={scrollToProducts} className="hover:text-amber-400 transition-colors text-left">Coriander & Cumin</button></li>
-                <li><button onClick={scrollToProducts} className="hover:text-amber-400 transition-colors text-left">Sesame Seeds</button></li>
-                <li><button onClick={scrollToProducts} className="hover:text-amber-400 transition-colors text-left">Chickpeas & Mung</button></li>
-                <li><button onClick={scrollToProducts} className="hover:text-amber-400 transition-colors text-left">Wheat</button></li>
+                <li><button onClick={() => navigate('/products')} className="hover:text-amber-400 transition-colors text-left">Groundnut & Peanut</button></li>
+                <li><button onClick={() => navigate('/products')} className="hover:text-amber-400 transition-colors text-left">Coriander & Cumin</button></li>
+                <li><button onClick={() => navigate('/products')} className="hover:text-amber-400 transition-colors text-left">Sesame Seeds</button></li>
+                <li><button onClick={() => navigate('/products')} className="hover:text-amber-400 transition-colors text-left">Chickpeas & Mung</button></li>
+                <li><button onClick={() => navigate('/products')} className="hover:text-amber-400 transition-colors text-left">Wheat</button></li>
               </ul>
             </div>
 
