@@ -8,6 +8,7 @@ import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Products from "./pages/Products";
+import Contact from "./pages/Contact";
 import AdminPage from "./pages/AdminPage";
 import ProductDetails from "./pages/ProductDetails";
 import NotFound from "./pages/NotFound";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/contact" element={<Contact />} />
             {/* TestAdmin route removed */}
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/product/:id" element={<ProductDetails />} />
