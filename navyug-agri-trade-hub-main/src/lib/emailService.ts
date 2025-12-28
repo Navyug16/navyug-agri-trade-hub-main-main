@@ -18,13 +18,7 @@ interface EmailData {
 
 export const sendEmail = async (data: EmailData) => {
     try {
-        // We check if the keys are placeholders
-        if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
-            console.warn("EmailJS not configured yet. Returning mock success.");
-            // Throw error generally, but for demo we might just simulate
-            // throw new Error("EmailJS is not configured. Please add your credentials.");
-            return { success: true, mocked: true };
-        }
+        // Credentials configured. Proceeding to send.
 
         const response = await emailjs.send(
             EMAILJS_SERVICE_ID,
