@@ -62,9 +62,9 @@ const Products = () => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
                             <img
-                                src="/lovable-uploads/ef1bc6e7-7b27-4e12-8ef2-bcf775af4873.png"
+                                src="/logo-new.jpg"
                                 alt="NAVYUG ENTERPRISE Logo"
-                                className="w-12 h-12 object-contain"
+                                className="w-16 h-16 object-contain rounded-full mix-blend-multiply"
                             />
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900">NAVYUG ENTERPRISE</h1>

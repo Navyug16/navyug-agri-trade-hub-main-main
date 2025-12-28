@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, Users, Target, Award, ShieldCheck, HeartHandshake, Leaf, Sprout } from 'lucide-react';
+import { ArrowLeft, Users, Target, Award, ShieldCheck, HeartHandshake, Leaf, Sprout, Globe, Clock, FileCheck, Tractor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
@@ -35,9 +35,9 @@ const About = () => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
                             <img
-                                src="/lovable-uploads/ef1bc6e7-7b27-4e12-8ef2-bcf775af4873.png"
+                                src="/logo-new.jpg"
                                 alt="NAVYUG ENTERPRISE Logo"
-                                className="w-12 h-12 object-contain"
+                                className="w-16 h-16 object-contain rounded-full mix-blend-multiply"
                             />
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900">NAVYUG ENTERPRISE</h1>
@@ -68,19 +68,29 @@ const About = () => {
             <div className="container mx-auto px-4 py-16 space-y-20">
 
                 {/* Who We Are */}
+                {/* Who We Are & Our Natural Commitment */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <div className="flex items-center gap-3 mb-4 text-amber-600">
                             <Leaf className="h-6 w-6" />
                             <span className="font-semibold tracking-wide uppercase text-sm">Our Story</span>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Who We Are</h2>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Who We Are</h2>
+                        <h3 className="text-lg text-amber-600 font-medium mb-6">Bridging Rural Excellence with Global Markets Since 2003.</h3>
+
                         <p className="text-gray-600 leading-relaxed mb-6">
-                            NAVYUG ENTERPRISE was established in 2003 with a singular vision: to bridge the gap between hardworking Indian farmers and the global marketplace. Founded by Mr. Hareshbhai Galani & Mr. Manojbhai Galani, we operate as a trusted commission agent specializing in agricultural food products.
+                            Navyug Enterprise was established with a singular, powerful vision: to bridge the gap between the hardworking farmers of India and the vast opportunities of the global marketplace. Founded by Mr. Hareshbhai Galani and Mr. Manojbhai Galani, our journey began over two decades ago in the heart of Gujarat's agricultural landscape.
                         </p>
-                        <p className="text-gray-600 leading-relaxed">
-                            We take pride in dealing exclusively in natural, farm-grown produce—strictly no fertilizers or chemicals involved in our trading process where possible. Our foundation is built on transparency, rural values, and an unwavering commitment to quality.
+                        <p className="text-gray-600 leading-relaxed mb-8">
+                            Today, we operate as a premier commission agent specializing in high-quality agricultural food products. We don't just trade; we build relationships based on the traditional rural values of honesty and transparency.
                         </p>
+
+                        <div className="bg-amber-50 p-6 rounded-xl border border-amber-100">
+                            <h4 className="text-xl font-bold text-gray-900 mb-3">Our Natural Commitment</h4>
+                            <p className="text-gray-700 leading-relaxed">
+                                We take immense pride in dealing exclusively in natural, farm-grown produce. We maintain a strict focus on sourcing products where fertilizers and chemicals are minimized, ensuring that the food we bring to the market is as close to nature as possible.
+                            </p>
+                        </div>
                     </div>
                     <div className="rounded-2xl overflow-hidden shadow-xl aspect-video md:aspect-square relative group">
                         <img
@@ -93,26 +103,84 @@ const About = () => {
                 </section>
 
                 {/* Who We Serve */}
-                <section className="grid md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
-                    <div className="order-2 md:order-1 rounded-2xl overflow-hidden shadow-xl aspect-video md:aspect-square relative group">
+                <section className="grid md:grid-cols-2 gap-12 items-start md:flex-row-reverse">
+                    <div className="order-2 md:order-1 rounded-2xl overflow-hidden shadow-xl aspect-video md:aspect-auto h-full relative group">
                         <img
                             src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2574&auto=format&fit=crop"
                             alt="Who We Serve"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 min-h-[400px]"
                         />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                     </div>
-                    <div className="order-1 md:order-2">
-                        <div className="flex items-center gap-3 mb-4 text-amber-600">
-                            <Users className="h-6 w-6" />
-                            <span className="font-semibold tracking-wide uppercase text-sm">Our Partners</span>
+                    <div className="order-1 md:order-2 space-y-8">
+                        <div>
+                            <div className="flex items-center gap-3 mb-4 text-amber-600">
+                                <Users className="h-6 w-6" />
+                                <span className="font-semibold tracking-wide uppercase text-sm">Our Network</span>
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-900 mb-4">Who We Serve: A Dual Commitment to Excellence</h2>
+                            <p className="text-gray-600 leading-relaxed">
+                                At NAVYUG ENTERPRISE, we act as the vital link in a global agricultural ecosystem. Our mission is to ensure that quality produce finds the right market, creating value for everyone from the soil to the shelf.
+                            </p>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Who We Serve</h2>
-                        <p className="text-gray-600 leading-relaxed mb-6">
-                            We serve a diverse network of domestic and international buyers who value authenticity and quality. From local wholesalers/retailers to large-scale global importers, our client base relies on us for consistent supply chains of Groundnut, Cumin, Sesame, and other essential commodities.
-                        </p>
-                        <p className="text-gray-600 leading-relaxed">
-                            Equally important are the farmers we serve. By providing them with a fair, transparent marketplace, we ensure that the agricultural community thrives alongside our business partners.
-                        </p>
+
+                        {/* Global & Domestic Buyer */}
+                        <div className="bg-white rounded-xl">
+                            <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-2">
+                                <Globe className="h-5 w-5 text-amber-600" />
+                                For the Global & Domestic Buyer
+                            </h3>
+                            <p className="text-amber-600 font-medium mb-3">Reliability in Every Consignment.</p>
+                            <p className="text-gray-600 text-sm mb-4">
+                                We serve a sophisticated network of domestic wholesalers, retailers, and large-scale global importers who refuse to compromise on authenticity. Our partners rely on us for:
+                            </p>
+                            <ul className="space-y-3">
+                                <li className="flex items-start text-sm text-gray-600">
+                                    <span className="font-bold text-amber-500 mr-2">•</span>
+                                    <span><span className="font-semibold text-gray-900">Consistent Supply Chains:</span> Year-round availability of premium Groundnut, Cumin (Jeera), Sesame, and other essential Indian commodities.</span>
+                                </li>
+                                <li className="flex items-start text-sm text-gray-600">
+                                    <span className="font-bold text-amber-500 mr-2">•</span>
+                                    <span><span className="font-semibold text-gray-900">Verified Quality:</span> Stringent grading that meets international standards for purity and safety.</span>
+                                </li>
+                                <li className="flex items-start text-sm text-gray-600">
+                                    <span className="font-bold text-amber-500 mr-2">•</span>
+                                    <span><span className="font-semibold text-gray-900">Logistical Efficiency:</span> Seamless documentation and transparent communication that simplifies bulk sourcing.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Indian Farmer */}
+                        <div className="bg-white rounded-xl">
+                            <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-2">
+                                <Tractor className="h-5 w-5 text-amber-600" />
+                                For the Indian Farmer
+                            </h3>
+                            <p className="text-amber-600 font-medium mb-3">Empowering the Roots of Agriculture.</p>
+                            <p className="text-gray-600 text-sm mb-4">
+                                Equally central to our mission are the hardworking farmers who are the backbone of our industry. We serve the agricultural community by providing:
+                            </p>
+                            <ul className="space-y-3">
+                                <li className="flex items-start text-sm text-gray-600">
+                                    <span className="font-bold text-amber-500 mr-2">•</span>
+                                    <span><span className="font-semibold text-gray-900">Fair & Transparent Discovery:</span> An honest marketplace where the true value of their labor is recognized through open APMC auctions.</span>
+                                </li>
+                                <li className="flex items-start text-sm text-gray-600">
+                                    <span className="font-bold text-amber-500 mr-2">•</span>
+                                    <span><span className="font-semibold text-gray-900">Financial Speed:</span> Our "Fast Payment Guarantee" ensures that farmers receive their settlements via UPI or Bank Transfer without delay.</span>
+                                </li>
+                                <li className="flex items-start text-sm text-gray-600">
+                                    <span className="font-bold text-amber-500 mr-2">•</span>
+                                    <span><span className="font-semibold text-gray-900">Sustainable Growth:</span> By connecting traditional farms to modern markets, we ensure the rural community thrives alongside our business partners.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div className="pt-2">
+                            <p className="text-lg font-semibold text-gray-900 italic border-l-4 border-amber-500 pl-4 py-1 bg-amber-50">
+                                "We don't just move commodities; we grow trust."
+                            </p>
+                        </div>
                     </div>
                 </section>
 
@@ -195,35 +263,58 @@ const About = () => {
                     </div>
                 </section>
 
-                {/* Why Client Trust Us */}
-                <section className="text-center max-w-5xl mx-auto">
+                {/* Why Partner With Us */}
+                <section className="text-center max-w-6xl mx-auto">
                     <div className="flex items-center justify-center gap-3 mb-4 text-amber-600">
                         <HeartHandshake className="h-6 w-6" />
-                        <span className="font-semibold tracking-wide uppercase text-sm">Our Values</span>
+                        <span className="font-semibold tracking-wide uppercase text-sm">Our Value Proposition</span>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-12">Why Clients Trust Us</h2>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center text-amber-700 mx-auto mb-4">
-                                <ShieldCheck className="w-6 h-6" />
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Partner With Us?</h2>
+                    <p className="text-gray-600 max-w-2xl mx-auto mb-12">Our foundation is rural, but our standards are global.</p>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* 20+ Years */}
+                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow h-full flex flex-col items-center text-center group">
+                            <div className="bg-amber-100 w-14 h-14 rounded-full flex items-center justify-center text-amber-700 mb-5 group-hover:bg-amber-200 transition-colors">
+                                <Clock className="w-7 h-7" />
                             </div>
-                            <h3 className="font-bold text-lg mb-2">Transparency</h3>
-                            <p className="text-gray-600 text-sm">No hidden costs or compromised quality. We believe in clear, honest communication at every step.</p>
+                            <h3 className="font-bold text-lg mb-3">20+ Years of Expertise</h3>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                                Deep-rooted knowledge of the APMC auction process and market trends.
+                            </p>
                         </div>
-                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center text-amber-700 mx-auto mb-4">
-                                <Truck className="w-6 h-6" />
+
+                        {/* Direct Sourcing */}
+                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow h-full flex flex-col items-center text-center group">
+                            <div className="bg-amber-100 w-14 h-14 rounded-full flex items-center justify-center text-amber-700 mb-5 group-hover:bg-amber-200 transition-colors">
+                                <Sprout className="w-7 h-7" />
                             </div>
-                            {/* Note: Truck icon needed so adding import */}
-                            <h3 className="font-bold text-lg mb-2">Reliability</h3>
-                            <p className="text-gray-600 text-sm">Timely delivery is our promise. Our robust logistics network ensures your orders arrive as planned.</p>
+                            <h3 className="font-bold text-lg mb-3">Direct Sourcing</h3>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                                We work directly with farmers to ensure the freshest quality.
+                            </p>
                         </div>
-                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center text-amber-700 mx-auto mb-4">
-                                <Users className="w-6 h-6" />
+
+                        {/* Global Vision */}
+                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow h-full flex flex-col items-center text-center group">
+                            <div className="bg-amber-100 w-14 h-14 rounded-full flex items-center justify-center text-amber-700 mb-5 group-hover:bg-amber-200 transition-colors">
+                                <Globe className="w-7 h-7" />
                             </div>
-                            <h3 className="font-bold text-lg mb-2">Long-term Relations</h3>
-                            <p className="text-gray-600 text-sm">We treat every client as a partner, focusing on building lasting relationships over quick profits.</p>
+                            <h3 className="font-bold text-lg mb-3">Global Vision</h3>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                                Modernizing traditional trade to meet international export standards.
+                            </p>
+                        </div>
+
+                        {/* Transparency First */}
+                        <div className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow h-full flex flex-col items-center text-center group">
+                            <div className="bg-amber-100 w-14 h-14 rounded-full flex items-center justify-center text-amber-700 mb-5 group-hover:bg-amber-200 transition-colors">
+                                <FileCheck className="w-7 h-7" />
+                            </div>
+                            <h3 className="font-bold text-lg mb-3">Transparency First</h3>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                                Every transaction is built on trust, clear documentation, and a foundation of ethical values.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -245,7 +336,6 @@ const About = () => {
     );
 };
 
-// Internal imports helper for icons not imported at top
-import { Truck } from 'lucide-react';
+
 
 export default About;
