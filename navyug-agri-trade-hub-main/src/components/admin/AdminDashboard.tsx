@@ -42,7 +42,7 @@ interface Inquiry {
   phone?: string;
   product_interest?: string;
   message: string;
-  status: 'pending' | 'in_progress' | 'closed_won' | 'closed_lost';
+  status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost';
   dealValue?: number;
   notes?: string;
   created_at: string;
@@ -713,7 +713,7 @@ const AdminDashboard = () => {
       acc[product] = (acc[product] || 0) + 1;
       return acc;
     }, {}),
-    closedInquiries: filteredInquiries.filter(i => i.status === 'closed_won').length,
+    closedInquiries: filteredInquiries.filter(i => i.status === 'closed' || i.status === 'closed_won').length,
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
