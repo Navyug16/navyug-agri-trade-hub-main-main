@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import InquiryDialog from '@/components/InquiryDialog';
+import Footer from '@/components/Footer';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -137,6 +138,7 @@ const ProductDetails = () => {
                 onClose={() => setIsInquiryOpen(false)}
                 productName={product.name}
             />
+            <Footer />
         </div>
     );
 };

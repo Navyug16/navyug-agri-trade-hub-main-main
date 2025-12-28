@@ -3,6 +3,7 @@ import { ArrowLeft, Users, Target, Award, ShieldCheck, HeartHandshake, Leaf, Spr
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
+import Footer from '@/components/Footer';
 
 const About = () => {
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ const About = () => {
                             <Link to="/" className="text-gray-700 hover:text-amber-600 transition-colors">Home</Link>
                             <Link to="/about" className="text-amber-600 font-semibold transition-colors">About</Link>
                             <Link to="/products" className="text-gray-700 hover:text-amber-600 transition-colors">Products</Link>
-                            <a href="/#contact" className="text-gray-700 hover:text-amber-600 transition-colors">Contact</a>
+                            <Link to="/contact" className="text-gray-700 hover:text-amber-600 transition-colors">Contact</Link>
                         </nav>
                     </div>
                 </div>
@@ -322,16 +323,7 @@ const About = () => {
             </div>
 
             {/* Footer - Consistent with Index */}
-            <footer className="bg-gray-900 text-white pt-16 pb-8">
-                <div className="container mx-auto px-4">
-                    <div className="border-t border-gray-800 pt-8 text-center">
-                        <p className="text-gray-500 text-sm">© 2024 NAVYUG ENTERPRISE. All rights reserved.</p>
-                        <Link to="/">
-                            <Button variant="link" className="text-gray-500 hover:text-amber-500 mt-2">Back to Home</Button>
-                        </Link>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };

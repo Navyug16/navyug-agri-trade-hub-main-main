@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import ContactForm from '@/components/ContactForm';
 import FloatingContact from '@/components/FloatingContact';
 import { Button } from '@/components/ui/button';
+import Footer from '@/components/Footer';
 
 const Contact = () => {
     const navigate = useNavigate();
@@ -118,17 +119,7 @@ const Contact = () => {
                 </div>
             </main>
 
-            {/* Footer - Consistent with Index */}
-            <footer className="bg-gray-900 text-white pt-16 pb-8">
-                <div className="container mx-auto px-4">
-                    <div className="border-t border-gray-800 pt-8 text-center">
-                        <p className="text-gray-500 text-sm">© 2024 NAVYUG ENTERPRISE. All rights reserved.</p>
-                        <Link to="/">
-                            <Button variant="link" className="text-gray-500 hover:text-amber-500 mt-2">Back to Home</Button>
-                        </Link>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
             <FloatingContact />
         </div>
     );
