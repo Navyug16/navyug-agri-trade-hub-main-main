@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Mail, Phone, MapPin, Truck, Globe, Award, ShoppingCart, Facebook, Twitter, Instagram, Linkedin, Star, Sprout, Leaf, Sun, CloudSun } from 'lucide-react';
+import { ArrowRight, Mail, Phone, MapPin, Truck, Globe, Award, ShoppingCart, Facebook, Twitter, Instagram, Linkedin, Star, Sprout, Leaf, Sun, CloudSun, FileCheck, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
+import FloatingContact from '@/components/FloatingContact';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -23,6 +24,20 @@ const Index = () => {
     subject: '',
     message: ''
   });
+
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+  const heroImages = [
+    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2832&auto=format&fit=crop", // Field
+    "https://images.unsplash.com/photo-1567306301408-9b74779a11af?q=80&w=2626&auto=format&fit=crop", // Seeds / Agriculture close up
+    "https://images.unsplash.com/photo-1599940824399-b87987ced72a?q=80&w=2627&auto=format&fit=crop"  // Peanuts or similar
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -172,17 +187,21 @@ const Index = () => {
       {/* Hero Section */}
       <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay and Parallax */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{ transform: `translateY(${scrollY * 0.5}px)` }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2832&auto=format&fit=crop"
-            alt="Agricultural Field"
-            className="w-full h-full object-cover scale-110" // Scale up slightly to prevent white gaps during parallax
-          />
-          <div className="absolute inset-0 bg-black/60"></div>
-        </div>
+        {/* Background Image Slider with Overlay and Parallax */}
+        {heroImages.map((img, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${currentHeroImage === index ? 'opacity-100' : 'opacity-0'}`}
+            style={{ transform: `translateY(${scrollY * 0.5}px)` }}
+          >
+            <img
+              src={img}
+              alt="Agricultural Field"
+              className="w-full h-full object-cover scale-110"
+            />
+            <div className="absolute inset-0 bg-black/60"></div>
+          </div>
+        ))}
 
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-4xl mx-auto animate-in fade-in zoom-in duration-1000">
@@ -197,7 +216,7 @@ const Index = () => {
               <Button
                 size="lg"
                 className="bg-amber-600 hover:bg-amber-700 text-white text-lg px-8 py-6 rounded-full transition-all hover:scale-105"
-                onClick={scrollToProducts}
+                onClick={() => navigate('/products')}
               >
                 View Our Products <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -264,33 +283,37 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <RevealOnScroll>
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Trusted by Global Partners</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">Building lasting relationships through quality and trust.</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4 font-heading">Registered & Recognized By</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">Committed to quality and compliance with national standards.</p>
             </div>
           </RevealOnScroll>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-70">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-80">
             <RevealOnScroll delay={0}>
-              <div className="flex flex-col justify-center items-center h-24 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100">
-                <Globe className="h-8 w-8 text-gray-400 group-hover:text-amber-600 transition-colors mb-2" />
-                <span className="text-lg font-bold text-gray-400 group-hover:text-gray-700 transition-colors">AgriGlobal</span>
+              <div className="flex flex-col justify-center items-center h-32 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100 p-4 text-center">
+                <FileCheck className="h-8 w-8 text-gray-400 group-hover:text-amber-600 transition-colors mb-2" />
+                <span className="text-md font-bold text-gray-500 group-hover:text-gray-900 transition-colors">APEDA</span>
+                <span className="text-xs text-gray-400 mt-1">Govt. of India</span>
               </div>
             </RevealOnScroll>
             <RevealOnScroll delay={100}>
-              <div className="flex flex-col justify-center items-center h-24 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100">
+              <div className="flex flex-col justify-center items-center h-32 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100 p-4 text-center">
                 <Leaf className="h-8 w-8 text-gray-400 group-hover:text-green-600 transition-colors mb-2" />
-                <span className="text-lg font-bold text-gray-400 group-hover:text-gray-700 transition-colors">NatureFresh</span>
+                <span className="text-md font-bold text-gray-500 group-hover:text-gray-900 transition-colors">SPICES BOARD</span>
+                <span className="text-xs text-gray-400 mt-1">Ministry of Commerce</span>
               </div>
             </RevealOnScroll>
             <RevealOnScroll delay={200}>
-              <div className="flex flex-col justify-center items-center h-24 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100">
-                <Sprout className="h-8 w-8 text-gray-400 group-hover:text-green-600 transition-colors mb-2" />
-                <span className="text-lg font-bold text-gray-400 group-hover:text-gray-700 transition-colors">OrganicTrade</span>
+              <div className="flex flex-col justify-center items-center h-32 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100 p-4 text-center">
+                <ShieldCheck className="h-8 w-8 text-gray-400 group-hover:text-green-600 transition-colors mb-2" />
+                <span className="text-md font-bold text-gray-500 group-hover:text-gray-900 transition-colors">FSSAI</span>
+                <span className="text-xs text-gray-400 mt-1">Food Safety Authority</span>
               </div>
             </RevealOnScroll>
             <RevealOnScroll delay={300}>
-              <div className="flex flex-col justify-center items-center h-24 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100">
-                <Sun className="h-8 w-8 text-gray-400 group-hover:text-amber-500 transition-colors mb-2" />
-                <span className="text-lg font-bold text-gray-400 group-hover:text-gray-700 transition-colors">PureHarvest</span>
+              <div className="flex flex-col justify-center items-center h-32 bg-white rounded-lg shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group cursor-pointer border border-gray-100 p-4 text-center">
+                <MapPin className="h-8 w-8 text-gray-400 group-hover:text-amber-500 transition-colors mb-2" />
+                <span className="text-md font-bold text-gray-500 group-hover:text-gray-900 transition-colors">APMC GONDAL</span>
+                <span className="text-xs text-gray-400 mt-1">Registered Member</span>
               </div>
             </RevealOnScroll>
           </div>
@@ -596,6 +619,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      <FloatingContact />
     </div>
   );
 };
