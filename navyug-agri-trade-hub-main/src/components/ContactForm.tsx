@@ -5,9 +5,13 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendEmail } from "@/lib/emailService";
 
+// ... imports
+import ThankYouPopup from './ThankYouPopup';
+
 const ContactForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,6 +60,10 @@ const ContactForm = () => {
         message: `NEW WEBSITE INQUIRY\n\nName: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nProduct: ${formData.subject}\nQuantity: ${formData.quantity}\n\nMessage:\n${formData.message}\n\nTime: ${new Date().toLocaleString()}`
       });
 
+      // Show Thank You Popup
+      setShowThankYou(true);
+
+      // Also show toast as a fallback/notification
       toast({
         title: "Message Sent",
         description: "We've received your message and will get back to you soon.",
@@ -75,86 +83,89 @@ const ContactForm = () => {
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
-      <div className="grid md:grid-cols-2 gap-4">
+    <>
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              placeholder="Your Name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              placeholder="+91 98765 43210"
+            />
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              placeholder="your@email.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Quantity (Approx)</label>
+            <input
+              type="text"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              placeholder="e.g. 50 Tons"
+            />
+          </div>
+        </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Product / Subject</label>
           <input
             type="text"
-            name="name"
-            value={formData.name}
+            name="subject"
+            value={formData.subject}
             onChange={handleInputChange}
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            placeholder="Your Name"
+            placeholder="Product Name or Inquiry Subject"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
+          <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+          <textarea
+            name="message"
+            value={formData.message}
             onChange={handleInputChange}
             required
+            rows={6}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            placeholder="+91 98765 43210"
-          />
+            placeholder="Tell us about your requirements..."
+          ></textarea>
         </div>
-      </div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            placeholder="your@email.com"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Quantity (Approx)</label>
-          <input
-            type="text"
-            name="quantity"
-            value={formData.quantity}
-            onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            placeholder="e.g. 50 Tons"
-          />
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Product / Subject</label>
-        <input
-          type="text"
-          name="subject"
-          value={formData.subject}
-          onChange={handleInputChange}
-          required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-          placeholder="Product Name or Inquiry Subject"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-        <textarea
-          name="message"
-          value={formData.message}
-          onChange={handleInputChange}
-          required
-          rows={6}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-          placeholder="Tell us about your requirements..."
-        ></textarea>
-      </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3">
-        {isSubmitting ? 'Sending...' : 'Send Message'}
-      </Button>
-    </form>
+        <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3">
+          {isSubmitting ? 'Sending...' : 'Send Message'}
+        </Button>
+      </form>
+      <ThankYouPopup isOpen={showThankYou} onClose={() => setShowThankYou(false)} />
+    </>
   );
 };
 

@@ -11,6 +11,7 @@ const Products = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState("All");
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -38,6 +39,14 @@ const Products = () => {
         };
         fetchProducts();
     }, []);
+
+    // Extract unique categories
+    const categories = ["All", ...Array.from(new Set(products.map(p => p.type))).filter(Boolean)];
+
+    // Filter products
+    const filteredProducts = selectedCategory === "All"
+        ? products
+        : products.filter(p => p.type === selectedCategory);
 
     return (
         <div className="min-h-screen bg-white">
@@ -90,11 +99,27 @@ const Products = () => {
                     </p>
                 </div>
 
+                {/* Category Filter */}
+                {!loading && (
+                    <div className="flex justify-center flex-wrap gap-2 mb-10 sticky top-24 z-40 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-100">
+                        {categories.map((category) => (
+                            <Button
+                                key={category}
+                                variant={selectedCategory === category ? "default" : "outline"}
+                                className={`rounded-full px-6 capitalize ${selectedCategory === category ? 'bg-amber-600 hover:bg-amber-700' : 'text-gray-600 border-gray-300 hover:border-amber-600 hover:text-amber-600'}`}
+                                onClick={() => setSelectedCategory(category)}
+                            >
+                                {category}
+                            </Button>
+                        ))}
+                    </div>
+                )}
+
                 {loading ? (
                     <div className="flex justify-center py-20">Loading products...</div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                        {products.map((product) => (
+                        {filteredProducts.map((product) => (
                             <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md h-full flex flex-col">
                                 <div className="relative overflow-hidden h-56">
                                     <img
@@ -113,7 +138,10 @@ const Products = () => {
                                     </div>
                                 </div>
                                 <CardContent className="p-6 flex-1 flex flex-col">
-                                    <h3 className="text-xl font-semibold mb-2 text-gray-900 group-hover:text-amber-600 transition-colors">{product.name}</h3>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">{product.name}</h3>
+                                        <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-medium">{product.type}</span>
+                                    </div>
                                     <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1">
                                         {product.description}
                                     </p>

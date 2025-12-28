@@ -52,7 +52,8 @@ interface Product {
   id: string;
   name: string;
   type: string;
-  image: string;
+  image: string; // Primary image for list view
+  images?: string[]; // Gallery images
   description: string;
   longDescription?: string;
   varieties?: string[];
@@ -60,14 +61,12 @@ interface Product {
   features?: string[];
 }
 
-// Extracted component to avoid re-rendering issues
-// Extracted component to avoid re-rendering issues
+// ProductDialogForm component
 const ProductDialogForm = ({
   title,
   currentProduct,
   setCurrentProduct,
   handleSaveProduct,
-  handleFileChange,
   saving,
   onCancel,
   isEditMode
@@ -76,7 +75,6 @@ const ProductDialogForm = ({
   currentProduct: Partial<Product>;
   setCurrentProduct: React.Dispatch<React.SetStateAction<Partial<Product>>>;
   handleSaveProduct: (e: React.FormEvent) => Promise<void>;
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   saving: boolean;
   onCancel: () => void;
   isEditMode: boolean;
@@ -85,6 +83,67 @@ const ProductDialogForm = ({
   const [newFeature, setNewFeature] = useState("");
   const [newSpecKey, setNewSpecKey] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.src = ev.target?.result as string;
+          img.onload = () => {
+            // Resize logic
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            } else {
+              if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const webpDataUrl = canvas.toDataURL('image/webp', 0.7);
+
+              setCurrentProduct(prev => {
+                const currentImages = prev.images || (prev.image ? [prev.image] : []);
+                const newImages = [...currentImages, webpDataUrl];
+                return {
+                  ...prev,
+                  images: newImages,
+                  image: newImages[0] // Always ensure primary image is set
+                };
+              });
+            }
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+      toast({ title: "Images Added", description: `${files.length} images processed.` });
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setCurrentProduct(prev => {
+      const currentImages = prev.images || [];
+      const newImages = currentImages.filter((_, i) => i !== index);
+      return {
+        ...prev,
+        images: newImages,
+        image: newImages.length > 0 ? newImages[0] : '' // Update primary image
+      };
+    });
+  };
 
   const addVariety = () => {
     if (!newVariety.trim()) return;
@@ -156,7 +215,7 @@ const ProductDialogForm = ({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="type">Type/Category</Label>
+            <Label htmlFor="type">Type (e.g. Oil Seed)</Label>
             <Input
               id="type"
               placeholder="e.g. Oil Seed"
@@ -179,24 +238,51 @@ const ProductDialogForm = ({
 
         {/* Image Upload */}
         <div className="space-y-2">
-          <Label>Product Image</Label>
-          <div className="flex items-center gap-4">
-            {currentProduct.image && (
-              <img src={currentProduct.image} alt="Preview" className="h-20 w-20 object-cover rounded border" />
+          <Label>Product Images (First one is cover)</Label>
+          <div className="grid grid-cols-4 gap-4 mb-2">
+            {currentProduct.images && currentProduct.images.length > 0 ? (
+              currentProduct.images.map((img, idx) => (
+                <div key={idx} className="relative group aspect-square">
+                  <img src={img} alt={`Product ${idx}`} className="w-full h-full object-cover rounded border" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                  {idx === 0 && <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1 rounded">Cover</span>}
+                </div>
+              ))
+            ) : (
+              currentProduct.image && (
+                <div className="relative group aspect-square">
+                  <img src={currentProduct.image} alt="Preview" className="w-full h-full object-cover rounded border" />
+                  <button
+                    type="button"
+                    onClick={() => setCurrentProduct(prev => ({ ...prev, image: '', images: [] }))}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-100"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )
             )}
+
+            <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 aspect-square">
+              <Upload className="h-6 w-6 text-gray-400" />
+              <span className="text-xs text-gray-500 mt-1">Add</span>
+              <input type="file" className="hidden" accept="image/*" multiple onChange={handleFileChange} />
+            </label>
+          </div>
+          <div className="flex gap-2">
             <Input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
+              value={currentProduct.image || ''}
+              onChange={(e) => setCurrentProduct((prev) => ({ ...prev, image: e.target.value }))}
+              placeholder="Enter URL manually for Cover Image..."
+              className="mt-1"
             />
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Or enter URL manually:</p>
-          <Input
-            value={currentProduct.image || ''}
-            onChange={(e) => setCurrentProduct((prev) => ({ ...prev, image: e.target.value }))}
-            placeholder="https://..."
-            className="mt-1"
-          />
         </div>
 
         {/* Descriptions */}
@@ -240,7 +326,6 @@ const ProductDialogForm = ({
                 <button type="button" onClick={() => removeVariety(i)} className="ml-2 text-gray-500 hover:text-red-500"><X className="h-3 w-3" /></button>
               </div>
             ))}
-            {(!currentProduct.varieties || currentProduct.varieties.length === 0) && <span className="text-sm text-gray-400 italic">No varieties added</span>}
           </div>
         </div>
 
@@ -249,7 +334,7 @@ const ProductDialogForm = ({
           <Label className="text-base font-semibold">Key Features</Label>
           <div className="flex gap-2">
             <Input
-              placeholder="Add feature (e.g. Intense Aroma)"
+              placeholder="Add feature (e.g. Aroma)"
               value={newFeature}
               onChange={(e) => setNewFeature(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addFeature(); } }}
@@ -263,7 +348,6 @@ const ProductDialogForm = ({
                 <button type="button" onClick={() => removeFeature(i)} className="text-gray-500 hover:text-red-500"><X className="h-4 w-4" /></button>
               </div>
             ))}
-            {(!currentProduct.features || currentProduct.features.length === 0) && <span className="text-sm text-gray-400 italic">No features added</span>}
           </div>
         </div>
 
@@ -287,14 +371,10 @@ const ProductDialogForm = ({
           <div className="space-y-2 mt-2">
             {currentProduct.specifications && Object.entries(currentProduct.specifications).map(([key, value]) => (
               <div key={key} className="flex items-center justify-between bg-white border px-3 py-2 rounded text-sm">
-                <div className="flex gap-2">
-                  <span className="font-semibold">{key}:</span>
-                  <span>{value}</span>
-                </div>
+                <span className="font-semibold">{key}: <span className="font-normal">{value}</span></span>
                 <button type="button" onClick={() => removeSpec(key)} className="text-gray-500 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
               </div>
             ))}
-            {(!currentProduct.specifications || Object.keys(currentProduct.specifications).length === 0) && <span className="text-sm text-gray-400 italic">No specifications added</span>}
           </div>
         </div>
 
@@ -433,54 +513,6 @@ const AdminDashboard = () => {
       toast({ title: "Error", description: "Failed to seed products.", variant: "destructive" });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const img = new Image();
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        img.src = e.target?.result as string;
-      };
-
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
-
-        // Resize logic
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Convert to WebP with 0.7 quality
-          const webpDataUrl = canvas.toDataURL('image/webp', 0.7);
-          setCurrentProduct(prev => ({ ...prev, image: webpDataUrl }));
-          toast({ title: "Image Compressed", description: "Image converted to WebP and resized." });
-        }
-      };
-
-      reader.readAsDataURL(file);
     }
   };
 
@@ -766,7 +798,6 @@ const AdminDashboard = () => {
                       currentProduct={currentProduct}
                       setCurrentProduct={setCurrentProduct}
                       handleSaveProduct={handleSaveProduct}
-                      handleFileChange={handleFileChange}
                       saving={saving}
                       onCancel={() => setIsAddProductOpen(false)}
                       isEditMode={false}
@@ -779,7 +810,6 @@ const AdminDashboard = () => {
                       currentProduct={currentProduct}
                       setCurrentProduct={setCurrentProduct}
                       handleSaveProduct={handleSaveProduct}
-                      handleFileChange={handleFileChange}
                       saving={saving}
                       onCancel={() => setIsEditProductOpen(false)}
                       isEditMode={true}

@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
+import ThankYouPopup from './ThankYouPopup';
 
 interface InquiryDialogProps {
     isOpen: boolean;
@@ -25,6 +26,7 @@ interface InquiryDialogProps {
 const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productName }) => {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showThankYou, setShowThankYou] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -38,6 +40,14 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
             setFormData(prev => ({ ...prev, product: productName }));
         }
     }, [productName]);
+
+    // Reset state when dialog opens
+    useEffect(() => {
+        if (isOpen) {
+            setShowThankYou(false);
+        }
+    }, [isOpen]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -59,13 +69,12 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
                 created_at: serverTimestamp()
             });
 
-            toast({
-                title: "Inquiry Sent",
-                description: "We've received your inquiry and will get back to you soon.",
-            });
-
+            // Show Thank You Popup state instead of closing
+            setShowThankYou(true);
             setFormData({ name: '', email: '', phone: '', product: '', message: '' });
-            onClose();
+
+            // Optional: Backup toast
+            // toast({ ... }); 
         } catch (error) {
             console.error('Error sending message:', error);
             toast({
@@ -78,8 +87,13 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
         }
     };
 
+    if (showThankYou) {
+        return <ThankYouPopup isOpen={isOpen} onClose={onClose} />;
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
+            {/* ... Existing Dialog Content ... */}
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Product Inquiry</DialogTitle>
