@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 // These IDs should normally be in environment variables
 // But for client-side demo and setup instructions, we'll keep them here or ask user to fill them
 const EMAILJS_SERVICE_ID = 'Inquery';
-const EMAILJS_TEMPLATE_ID = 'template_etb8qb9';
+const EMAILJS_TEMPLATE_ID = 'template_mv2fuil'; // Updated to new ID
 const EMAILJS_PUBLIC_KEY = 'B8OxCKHew1JXcmRsG';
 
 interface EmailData {
