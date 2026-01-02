@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from "firebase/firestore";
 import { sendEmail } from "@/lib/emailService";
 import ThankYouPopup from './ThankYouPopup';
 
@@ -18,8 +18,23 @@ const ContactForm = () => {
     quantity: '',
     message: ''
   });
+  const [availableProducts, setAvailableProducts] = useState<string[]>([]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  React.useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const q = query(collection(db, "products"), orderBy("name"));
+        const querySnapshot = await getDocs(q);
+        const products = querySnapshot.docs.map(doc => doc.data().name);
+        setAvailableProducts(products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -98,6 +113,7 @@ const ContactForm = () => {
               placeholder="Your Name"
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
             <input
@@ -106,6 +122,8 @@ const ContactForm = () => {
               value={formData.phone}
               onChange={handleInputChange}
               required
+              pattern="[0-9]{10,}"
+              title="Please enter a valid phone number (digits only)"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="+91 98765 43210"
             />
@@ -124,29 +142,43 @@ const ContactForm = () => {
               placeholder="your@email.com"
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Quantity (Approx)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Quantity (Kg/Tons)</label>
             <input
-              type="text"
+              type="number"
               name="quantity"
               value={formData.quantity}
               onChange={handleInputChange}
+              required
+              min="1"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              placeholder="e.g. 50 Tons"
+              placeholder="e.g. 50"
             />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Product / Subject</label>
-          <input
-            type="text"
+          <label className="block text-sm font-medium text-gray-700 mb-2">Purpose / Product</label>
+          <select
             name="subject"
             value={formData.subject}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            placeholder="Product Name or Inquiry Subject"
-          />
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
+          >
+            <option value="" disabled>Select an option</option>
+            <optgroup label="General">
+              <option value="Meeting Request">Meeting Request</option>
+              <option value="General Inquiry">General Inquiry</option>
+            </optgroup>
+            <optgroup label="Products">
+              {availableProducts.map((product) => (
+                <option key={product} value={product}>
+                  {product}
+                </option>
+              ))}
+            </optgroup>
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
@@ -163,7 +195,7 @@ const ContactForm = () => {
         <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3">
           {isSubmitting ? 'Sending...' : 'Send Message'}
         </Button>
-      </form>
+      </form >
       <ThankYouPopup isOpen={showThankYou} onClose={() => setShowThankYou(false)} />
     </>
   );
