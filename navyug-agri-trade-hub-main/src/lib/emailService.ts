@@ -20,7 +20,19 @@ interface EmailData {
 
 export const sendEmail = async (data: EmailData) => {
     try {
-        // Credentials configured. Proceeding to send.
+        console.log("Attempting to send email with:", {
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: data.template_id || EMAILJS_TEMPLATE_ID,
+            public_key: EMAILJS_PUBLIC_KEY,
+            params: {
+                to_email: data.to_email,
+                to_name: data.to_name,
+                from_name: data.from_name,
+                reply_to: data.reply_to,
+                subject: data.subject,
+                // message: data.message, // Hide long message
+            }
+        });
 
         const response = await emailjs.send(
             EMAILJS_SERVICE_ID,
