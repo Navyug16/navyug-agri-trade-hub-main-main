@@ -737,7 +737,7 @@ const AdminDashboard = () => {
         <div className="p-8">
           {/* Header for content area */}
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800 capitalize">{activeTab.replace('_', ' ')}</h1>
+            {activeTab === 'inquiries' ? <div></div> : <h1 className="text-3xl font-bold text-gray-800 capitalize">{activeTab.replace('_', ' ')}</h1>}
 
             {/* Global Date Filter (Visible on Overview/Inquiries) */}
             {(activeTab === 'overview' || activeTab === 'inquiries') && (

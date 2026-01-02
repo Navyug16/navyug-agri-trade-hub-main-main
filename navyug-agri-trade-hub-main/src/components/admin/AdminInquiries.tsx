@@ -33,7 +33,7 @@ interface Inquiry {
   product_interest: string;
   quantity?: string; // New field
   message: string;
-  status: 'pending' | 'in_progress' | 'closed'; // Updated status types
+  status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost'; // Updated status types
   dealValue?: number;
   notes?: string;
   replyHistory?: EmailReply[];
@@ -258,6 +258,8 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
       case 'pending': return <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">Pending</Badge>;
       case 'in_progress': return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">In Progress</Badge>;
       case 'closed': return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">Closed</Badge>;
+      case 'closed_won': return <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Won</Badge>;
+      case 'closed_lost': return <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">Lost</Badge>;
       default: return <Badge variant="outline">Unknown</Badge>;
     }
   };
