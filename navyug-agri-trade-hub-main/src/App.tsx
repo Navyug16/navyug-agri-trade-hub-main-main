@@ -11,6 +11,8 @@ import Products from "./pages/Products";
 import Contact from "./pages/Contact";
 import AdminPage from "./pages/AdminPage";
 import ProductDetails from "./pages/ProductDetails";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 import React, { useEffect } from "react";
 
@@ -46,6 +48,8 @@ const App = () => (
             {/* TestAdmin route removed */}
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPost />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

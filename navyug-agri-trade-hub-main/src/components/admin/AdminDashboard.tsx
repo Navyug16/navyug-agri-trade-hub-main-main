@@ -19,6 +19,7 @@ import AdminNavigation from './AdminNavigation';
 import AdminOverview from './AdminOverview';
 import AdminInquiries from './AdminInquiries';
 import AdminProducts from './AdminProducts';
+import AdminBlogs from './AdminBlogs';
 import { products as staticProducts } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, Loader2, X, Trash2 } from 'lucide-react';
@@ -40,12 +41,14 @@ interface Inquiry {
   name: string;
   email: string;
   phone?: string;
-  product_interest?: string;
+  product_interest: string;
   message: string;
   status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost';
   dealValue?: number;
   notes?: string;
   created_at: string;
+  date: any;
+  time_string: string;
 }
 
 interface Product {
@@ -722,7 +725,7 @@ const AdminDashboard = () => {
     <div className="flex h-screen overflow-hidden bg-gray-100">
       {/* Sidebar Navigation */}
       <AdminNavigation
-        activeTab={activeTab as 'overview' | 'inquiries' | 'products'}
+        activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs'}
         onTabChange={setActiveTab}
         pendingInquiries={stats.pendingInquiries}
         onLogout={logout}
@@ -799,20 +802,9 @@ const AdminDashboard = () => {
                       isEditMode={false}
                     />
                   </Dialog>
-
-                  <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
-                    <ProductDialogForm
-                      title="Edit Product"
-                      currentProduct={currentProduct}
-                      setCurrentProduct={setCurrentProduct}
-                      handleSaveProduct={handleSaveProduct}
-                      saving={saving}
-                      onCancel={() => setIsEditProductOpen(false)}
-                      isEditMode={true}
-                    />
-                  </Dialog>
                 </div>
               </div>
+
               <AdminProducts
                 products={products}
                 onDelete={handleDeleteProduct}
@@ -821,6 +813,22 @@ const AdminDashboard = () => {
               />
             </div>
           )}
+
+          {activeTab === 'blogs' && (
+            <AdminBlogs />
+          )}
+
+          <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+            <ProductDialogForm
+              title="Edit Product"
+              currentProduct={currentProduct}
+              setCurrentProduct={setCurrentProduct}
+              handleSaveProduct={handleSaveProduct}
+              saving={saving}
+              onCancel={() => setIsEditProductOpen(false)}
+              isEditMode={true}
+            />
+          </Dialog>
         </div>
       </main>
     </div>

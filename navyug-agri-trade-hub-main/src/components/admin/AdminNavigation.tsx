@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Mail, Package, LogOut } from 'lucide-react';
+import { TrendingUp, Mail, Package, LogOut, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface AdminNavigationProps {
-  activeTab: 'overview' | 'inquiries' | 'products';
-  onTabChange: (tab: 'overview' | 'inquiries' | 'products') => void;
+  activeTab: 'overview' | 'inquiries' | 'products' | 'blogs';
+  onTabChange: (tab: 'overview' | 'inquiries' | 'products' | 'blogs') => void;
   pendingInquiries: number;
   onLogout: () => void;
   adminName?: string;
@@ -48,6 +48,14 @@ const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, a
         >
           <Package className="h-5 w-5 mr-3" />
           Products
+        </Button>
+        <Button
+          variant="ghost"
+          className={`w-full justify-start text-base h-12 ${activeTab === 'blogs' ? 'bg-gray-800 text-white font-semibold border-l-4 border-amber-500 rounded-l-none pl-2' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
+          onClick={() => onTabChange('blogs')}
+        >
+          <BookOpen className="h-5 w-5 mr-3" />
+          Blogs
         </Button>
       </div>
 
