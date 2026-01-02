@@ -14,6 +14,7 @@ interface EmailData {
     reply_to: string;
     subject: string;
     message: string;
+    cc_email?: string;
 }
 
 export const sendEmail = async (data: EmailData) => {
@@ -30,6 +31,7 @@ export const sendEmail = async (data: EmailData) => {
                 reply_to: data.reply_to,
                 subject: data.subject,
                 message: data.message,
+                cc_email: data.cc_email, // Pass CC if available
             },
             EMAILJS_PUBLIC_KEY
         );

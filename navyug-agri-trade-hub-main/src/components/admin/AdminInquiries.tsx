@@ -84,6 +84,9 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
   // Email Reply State
   const [replySubject, setReplySubject] = useState('');
   const [replyBody, setReplyBody] = useState('');
+  const [replyCc, setReplyCc] = useState('');
+  const [signature, setSignature] = useState(`\n\nWarm Regards,\n\nNavyug Enterprise Team\nwww.navyugenterprise.com\n+91 7016055780`);
+  const [isPreview, setIsPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [isSending, setIsSending] = useState(false);
 
@@ -179,11 +182,15 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
     // Use the actual logged-in admin name, or fallback to 'Admin'
     const senderName = admin?.name || 'Admin';
 
+    // Combine body and signature
+    const finalMessage = `${replyBody}${signature}`;
+
     const result = await sendEmail({
       to_email: selectedInquiry.email,
       to_name: selectedInquiry.name,
       subject: replySubject,
-      message: replyBody,
+      message: finalMessage,
+      cc_email: replyCc,
       from_name: 'Navyug Enterprise', // Sender Name in email client
       reply_to: 'navyugenterprise2003@gmail.com' // Where they reply to
     });
@@ -196,7 +203,7 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
         id: Date.now().toString(),
         date: new Date().toISOString(),
         subject: replySubject,
-        body: replyBody,
+        body: finalMessage,
         sender: senderName // Log who sent it
       };
 
@@ -224,7 +231,9 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
 
         setReplySubject('');
         setReplyBody('');
+        setReplyCc('');
         setSelectedTemplate('');
+        setIsPreview(false);
       } catch (err) {
         console.error(err);
         toast({ title: "Database Error", description: "Email sent but failed to save history.", variant: "destructive" });
@@ -566,39 +575,82 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
 
                   <TabsContent value="reply" className="mt-4 space-y-4">
                     <div className="p-4 border rounded-lg bg-white space-y-4">
-                      <div className="space-y-2">
-                        <Label>Use Template</Label>
-                        <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a template..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(EMAIL_TEMPLATES).map(([key, tpl]) => (
-                              <SelectItem key={key} value={key}>{tpl.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold text-gray-700">Compose Email</h3>
+                        <div className="flex gap-2">
+                          <Button variant={isPreview ? "default" : "outline"} size="sm" onClick={() => setIsPreview(!isPreview)}>
+                            {isPreview ? "Edit Mode" : "Preview Email"}
+                          </Button>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label>Subject</Label>
-                        <Input
-                          value={replySubject}
-                          onChange={(e) => setReplySubject(e.target.value)}
-                          placeholder="Email Subject"
-                        />
-                      </div>
+                      {isPreview ? (
+                        <div className="border p-4 rounded bg-gray-50 space-y-3 prose max-w-none text-sm">
+                          <div><strong>To:</strong> {selectedInquiry.email}</div>
+                          {replyCc && <div><strong>CC:</strong> {replyCc}</div>}
+                          <div><strong>Subject:</strong> {replySubject}</div>
+                          <hr />
+                          <div className="whitespace-pre-wrap">{replyBody}</div>
+                          <div className="whitespace-pre-wrap text-gray-600">{signature}</div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Use Template</Label>
+                              <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a template..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Object.entries(EMAIL_TEMPLATES).map(([key, tpl]) => (
+                                    <SelectItem key={key} value={key}>{tpl.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>CC Recipient (Optional)</Label>
+                              <Input
+                                value={replyCc}
+                                onChange={(e) => setReplyCc(e.target.value)}
+                                placeholder="partner@example.com"
+                              />
+                            </div>
+                          </div>
 
-                      <div className="space-y-2">
-                        <Label>Message Body</Label>
-                        <Textarea
-                          value={replyBody}
-                          onChange={(e) => setReplyBody(e.target.value)}
-                          placeholder="Type your reply here..."
-                          rows={8}
-                          className="font-mono text-sm"
-                        />
-                      </div>
+                          <div className="space-y-2">
+                            <Label>Subject</Label>
+                            <Input
+                              value={replySubject}
+                              onChange={(e) => setReplySubject(e.target.value)}
+                              placeholder="Email Subject"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Message Body</Label>
+                            <Textarea
+                              value={replyBody}
+                              onChange={(e) => setReplyBody(e.target.value)}
+                              placeholder="Type your reply here..."
+                              rows={8}
+                              className="font-mono text-sm"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Signature</Label>
+                            <Textarea
+                              value={signature}
+                              onChange={(e) => setSignature(e.target.value)}
+                              rows={4}
+                              className="text-xs text-gray-600 font-sans bg-gray-50"
+                            />
+                          </div>
+                        </>
+                      )}
 
                       <div className="flex justify-end pt-2">
                         <Button
