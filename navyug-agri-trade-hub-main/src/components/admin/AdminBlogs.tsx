@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,6 +44,8 @@ const AdminBlogs = () => {
         image: '',
         author: 'Admin'
     });
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [activeImageTab, setActiveImageTab] = useState("url");
 
     useEffect(() => {
         fetchBlogs();
@@ -74,11 +78,19 @@ const AdminBlogs = () => {
         e.preventDefault();
         setSaving(true);
         try {
+            let imageUrl = currentBlog.image;
+
+            if (activeImageTab === 'upload' && imageFile) {
+                const storageRef = ref(storage, `blog-images/${Date.now()}_${imageFile.name}`);
+                const snapshot = await uploadBytes(storageRef, imageFile);
+                imageUrl = await getDownloadURL(snapshot.ref);
+            }
+
             const blogData = {
                 title: currentBlog.title,
                 excerpt: currentBlog.excerpt,
                 content: currentBlog.content,
-                image: currentBlog.image,
+                image: imageUrl || '',
                 author: currentBlog.author,
                 updated_at: Timestamp.now()
             };
@@ -96,6 +108,8 @@ const AdminBlogs = () => {
             setIsDialogOpen(false);
             fetchBlogs();
             setCurrentBlog({ title: '', excerpt: '', content: '', image: '', author: 'Admin' });
+            setImageFile(null);
+            setActiveImageTab("url");
         } catch (error) {
             console.error("Error saving blog:", error);
             toast({ title: "Error", description: "Failed to save blog", variant: "destructive" });
@@ -123,6 +137,8 @@ const AdminBlogs = () => {
 
     const startAdd = () => {
         setCurrentBlog({ title: '', excerpt: '', content: '', image: '', author: 'Admin' });
+        setImageFile(null);
+        setActiveImageTab("url");
         setIsDialogOpen(true);
     };
 
@@ -203,13 +219,35 @@ const AdminBlogs = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="image">Image URL</Label>
-                            <Input
-                                id="image"
-                                value={currentBlog.image}
-                                onChange={(e) => setCurrentBlog(prev => ({ ...prev, image: e.target.value }))}
-                                placeholder="https://..."
-                            />
+                            <Label>Blog Image</Label>
+                            <Tabs value={activeImageTab} onValueChange={setActiveImageTab} className="w-full">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="url">Image URL</TabsTrigger>
+                                    <TabsTrigger value="upload">Upload File</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="url" className="mt-2">
+                                    <Input
+                                        id="image"
+                                        value={currentBlog.image}
+                                        onChange={(e) => setCurrentBlog(prev => ({ ...prev, image: e.target.value }))}
+                                        placeholder="https://..."
+                                    />
+                                </TabsContent>
+                                <TabsContent value="upload" className="mt-2">
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    setImageFile(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    {imageFile && <p className="text-xs text-gray-500 mt-1">Selected: {imageFile.name}</p>}
+                                </TabsContent>
+                            </Tabs>
                         </div>
 
                         <div className="space-y-2">
