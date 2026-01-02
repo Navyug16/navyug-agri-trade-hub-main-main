@@ -29,12 +29,12 @@ const Index = () => {
     "https://images.unsplash.com/photo-1599940824399-b87987ced72a?q=80&w=2627&auto=format&fit=crop"  // Peanuts or similar
   ];
 
-  useEffect(() => {
+  /* useEffect(() => {
     const interval = setInterval(() => {
       setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); */
 
   useEffect(() => {
     const fetchProducts = async () => {
