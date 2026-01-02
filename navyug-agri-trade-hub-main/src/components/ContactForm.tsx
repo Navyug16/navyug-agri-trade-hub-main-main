@@ -64,20 +64,40 @@ const ContactForm = () => {
       setFormData({ name: '', email: '', phone: '', subject: '', quantity: '', message: '' });
 
       // Send Notification to Admin
-      // Non-blocking try-catch to ensure UI feedback is shown even if email fails
-      const adminEmail = 'navyugenterprise2003@gmail.com'; // Primary Admin Email
+      const adminEmail = 'navyugenterprise2003@gmail.com';
+      // ---------------------------------------------------------
+      // EmailJS Template IDs
+      // ---------------------------------------------------------
+      const ADMIN_TEMPLATE_ID = 'template_mv2fuil';
+      const USER_THANK_YOU_TEMPLATE_ID = 'template_u7suhcr';
+      // ---------------------------------------------------------
 
       try {
+        // 1. Send Admin Notification
         await sendEmail({
           to_email: adminEmail,
           to_name: 'Admin',
           from_name: formSnapshot.name,
           reply_to: formSnapshot.email,
           subject: `New Inquiry: ${formSnapshot.subject}`,
-          message: `NEW WEBSITE INQUIRY\n\nName: ${formSnapshot.name}\nPhone: ${formSnapshot.phone}\nEmail: ${formSnapshot.email}\nProduct: ${formSnapshot.subject}\nQuantity: ${formSnapshot.quantity}\n\nMessage:\n${formSnapshot.message}\n\nTime: ${new Date().toLocaleString()}`
+          message: `NEW WEBSITE INQUIRY\n\nName: ${formSnapshot.name}\nPhone: ${formSnapshot.phone}\nEmail: ${formSnapshot.email}\nProduct: ${formSnapshot.subject}\nQuantity: ${formSnapshot.quantity}\n\nMessage:\n${formSnapshot.message}\n\nTime: ${new Date().toLocaleString()}`,
+          template_id: ADMIN_TEMPLATE_ID
         });
+
+        // 2. Send Thank You Email to User
+        if (formSnapshot.email) {
+          await sendEmail({
+            to_email: formSnapshot.email,
+            to_name: formSnapshot.name,
+            from_name: 'Navyug Enterprise',
+            reply_to: 'navyugenterprise2003@gmail.com',
+            subject: `Thank you for contacting Navyug Enterprise`,
+            message: `Dear ${formSnapshot.name},\n\nThank you for your inquiry about ${formSnapshot.subject}.\n\nWe have received your message and our team will get back to you shortly.\n\nBest Regards,\nNavyug Enterprise Team`,
+            template_id: USER_THANK_YOU_TEMPLATE_ID
+          });
+        }
       } catch (emailError) {
-        console.error("Failed to send admin notification:", emailError);
+        console.error("Failed to send notifications:", emailError);
       }
 
       toast({

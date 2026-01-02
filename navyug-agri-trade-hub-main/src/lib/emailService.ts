@@ -15,6 +15,7 @@ interface EmailData {
     subject: string;
     message: string;
     cc_email?: string;
+    template_id?: string;
 }
 
 export const sendEmail = async (data: EmailData) => {
@@ -23,7 +24,7 @@ export const sendEmail = async (data: EmailData) => {
 
         const response = await emailjs.send(
             EMAILJS_SERVICE_ID,
-            EMAILJS_TEMPLATE_ID,
+            data.template_id || EMAILJS_TEMPLATE_ID, // Use provided template ID or default
             {
                 to_email: data.to_email,
                 to_name: data.to_name,
