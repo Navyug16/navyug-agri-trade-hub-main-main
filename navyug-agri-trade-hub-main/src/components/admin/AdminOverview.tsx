@@ -1,7 +1,14 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Users, Package, TrendingUp, DollarSign, Award, BarChart as BarChartIcon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   BarChart,
   Bar,
@@ -27,13 +34,18 @@ interface AdminOverviewProps {
 }
 
 const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }: AdminOverviewProps) => {
+  const [showTopProducts, setShowTopProducts] = useState(false);
+
   // Find top product name
   const topProductName = stats.topProducts
     ? Object.entries(stats.topProducts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A'
     : 'N/A';
-  const topProductCount = stats.topProducts
-    ? Object.entries(stats.topProducts).sort((a, b) => b[1] - a[1])[0]?.[1] || 0
-    : 0;
+
+  const top3Products = stats.topProducts
+    ? Object.entries(stats.topProducts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+    : [];
 
   // Prepare chart data (Inquiries per day/month)
   const chartData = useMemo(() => {
@@ -86,7 +98,10 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-amber-500 shadow-sm bg-white/50 backdrop-blur">
+        <Card
+          className="border-l-4 border-l-amber-500 shadow-sm bg-white/50 backdrop-blur cursor-pointer hover:bg-white transition-colors"
+          onClick={() => setShowTopProducts(true)}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Top Product</CardTitle>
             <Award className="h-4 w-4 text-amber-500" />
@@ -96,6 +111,33 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={showTopProducts} onOpenChange={setShowTopProducts}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Top Performing Products</DialogTitle>
+            <DialogDescription>Based on inquiry volume.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {top3Products.length > 0 ? (
+              top3Products.map(([name, count], index) => (
+                <div key={name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-white ${index === 0 ? 'bg-amber-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-700'
+                      }`}>
+                      {index + 1}
+                    </div>
+                    <div className="font-medium text-gray-900">{name}</div>
+                  </div>
+                  <div className="text-sm text-gray-500 font-semibold">{count} Inquiries</div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-500">No data available yet.</div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Analytics Chart - Digital Dashboard Style */}
       <Card className="flex-1 shadow-lg border-none bg-gradient-to-br from-white to-gray-50 overflow-hidden flex flex-col">
