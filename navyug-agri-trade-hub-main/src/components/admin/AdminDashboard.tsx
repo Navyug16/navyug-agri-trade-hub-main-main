@@ -49,6 +49,7 @@ interface Inquiry {
   created_at: string;
   date: any;
   time_string: string;
+  isDeleted?: boolean;
 }
 
 interface Product {
@@ -392,8 +393,6 @@ const ProductDialogForm = ({
   );
 };
 
-// ProductDialogForm component ends
-
 const AdminDashboard = () => {
   const { admin, logout } = useAdminAuth();
   const { toast } = useToast();
@@ -404,8 +403,6 @@ const AdminDashboard = () => {
   const setActiveTab = (tab: string) => {
     setSearchParams({ tab });
   };
-
-  // Stats state removed in favor of derived stats
 
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -425,7 +422,6 @@ const AdminDashboard = () => {
     specifications: {},
     features: []
   });
-  // Removed duplicate state declaration
 
   useEffect(() => {
     fetchData();
@@ -456,7 +452,8 @@ const AdminDashboard = () => {
           status: data.status || 'pending',
           dealValue: data.dealValue || 0,
           notes: data.notes || '',
-          created_at: data.created_at?.toDate().toISOString() || new Date().toISOString()
+          created_at: data.created_at?.toDate().toISOString() || new Date().toISOString(),
+          isDeleted: data.isDeleted || false,
         } as Inquiry;
       });
       // Sort inquiries (newest first)
@@ -623,9 +620,9 @@ const AdminDashboard = () => {
 
   const handleDeleteInquiry = async (id: string) => {
     try {
-      await deleteDoc(doc(db, "inquiries", id));
-      setInquiries(inquiries.filter(i => i.id !== id));
-      toast({ title: "Inquiry deleted", description: "Inquiry has been deleted successfully" });
+      await updateDoc(doc(db, "inquiries", id), { isDeleted: true });
+      setInquiries(prev => prev.map(i => i.id === id ? { ...i, isDeleted: true } : i));
+      toast({ title: "Inquiry moved to trash", description: "Inquiry has been removed from the list but saved in analytics." });
     } catch (error) {
       console.error("Error deleting inquiry: ", error);
       toast({ title: "Error", description: "Failed to delete inquiry", variant: "destructive" });
@@ -677,13 +674,16 @@ const AdminDashboard = () => {
     });
   };
 
+  // filteredInquiries contains ALL (including deleted) matching the date range
   const filteredInquiries = getFilteredInquiries();
+  // activeInquiries contains ONLY VISIBLE (non-deleted) matching the date range
+  const activeInquiries = filteredInquiries.filter(i => !i.isDeleted);
 
   const handleExportCSV = () => {
     const headers = ['ID', 'Name', 'Email', 'Phone', 'Product', 'Message', 'Status', 'Deal Value', 'Date', 'Notes'];
     const csvContent = [
       headers.join(','),
-      ...filteredInquiries.map(i => [
+      ...activeInquiries.map(i => [
         i.id,
         `"${i.name}"`,
         i.email,
@@ -707,16 +707,16 @@ const AdminDashboard = () => {
 
   // Stats are derived from filtered state
   const stats = {
-    totalInquiries: filteredInquiries.length,
-    pendingInquiries: filteredInquiries.filter(i => i.status === 'pending').length,
+    totalInquiries: filteredInquiries.length, // Show TOTAL traffic in the card (including deleted) as per user request
+    pendingInquiries: activeInquiries.filter(i => i.status === 'pending').length, // Only active pending
     totalProducts: products.length,
-    totalEarnings: filteredInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0),
+    totalEarnings: activeInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0), // Only active earnings
     topProducts: filteredInquiries.reduce((acc: any, curr) => {
       const product = curr.product_interest || 'Unknown';
       acc[product] = (acc[product] || 0) + 1;
       return acc;
     }, {}),
-    closedInquiries: filteredInquiries.filter(i => i.status === 'closed' || i.status === 'closed_won').length,
+    closedInquiries: activeInquiries.filter(i => i.status === 'closed' || i.status === 'closed_won').length,
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -763,7 +763,7 @@ const AdminDashboard = () => {
           {activeTab === 'overview' && (
             <AdminOverview
               stats={stats}
-              inquiries={filteredInquiries}
+              inquiries={filteredInquiries} // Pass ALL inquiries (including deleted) to graph
               onInquiryClick={() => setActiveTab('inquiries')}
               onProductClick={() => setActiveTab('products')}
             />
@@ -771,7 +771,8 @@ const AdminDashboard = () => {
 
           {activeTab === 'inquiries' && (
             <div className="relative z-10">
-              <AdminInquiries inquiries={filteredInquiries} onUpdateInquiry={handleUpdateInquiry} onDelete={handleDeleteInquiry} />
+              <AdminInquiries inquiries={activeInquiries} onUpdateInquiry={handleUpdateInquiry} onDelete={handleDeleteInquiry} />
+              {/* Pass only ACTIVE inquiries to list */}
             </div>
           )}
 
@@ -798,37 +799,27 @@ const AdminDashboard = () => {
                       setCurrentProduct={setCurrentProduct}
                       handleSaveProduct={handleSaveProduct}
                       saving={saving}
-                      onCancel={() => setIsAddProductOpen(false)}
-                      isEditMode={false}
+                      onCancel={() => {
+                        setIsAddProductOpen(false);
+                        setIsEditProductOpen(false);
+                        setCurrentProduct({});
+                      }}
+                      isEditMode={!!currentProduct.id && isEditProductOpen}
                     />
                   </Dialog>
                 </div>
-              </div>
 
-              <AdminProducts
-                products={products}
-                onDelete={handleDeleteProduct}
-                onEdit={startEditProduct}
-                onMove={handleMoveProduct}
-              />
+                <AdminProducts
+                  products={products}
+                  onMoveProduct={handleMoveProduct}
+                  onEditProduct={startEditProduct}
+                  onDeleteProduct={handleDeleteProduct}
+                />
+              </div>
             </div>
           )}
 
-          {activeTab === 'blogs' && (
-            <AdminBlogs />
-          )}
-
-          <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
-            <ProductDialogForm
-              title="Edit Product"
-              currentProduct={currentProduct}
-              setCurrentProduct={setCurrentProduct}
-              handleSaveProduct={handleSaveProduct}
-              saving={saving}
-              onCancel={() => setIsEditProductOpen(false)}
-              isEditMode={true}
-            />
-          </Dialog>
+          {activeTab === 'blogs' && <AdminBlogs />}
         </div>
       </main>
     </div>
