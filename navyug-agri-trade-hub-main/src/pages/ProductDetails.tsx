@@ -1,3 +1,4 @@
+import { resolveImagePath } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, ShoppingCart } from 'lucide-react';
@@ -66,7 +67,7 @@ const ProductDetails = () => {
                     <div className="grid md:grid-cols-2 gap-0">
                         <div className="relative h-96 md:h-auto bg-gray-100">
                             <img
-                                src={product.image}
+                                src={resolveImagePath(product.image)}
                                 alt={product.name}
                                 className="w-full h-full object-cover"
                             />

@@ -13,7 +13,7 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-1">
                         <div className="flex items-center space-x-3 mb-6">
                             <img
-                                src="/logo-new.jpg"
+                                src="/images/logo-new.jpg"
                                 alt="NAVYUG ENTERPRISE Logo"
                                 className="w-16 h-16 object-contain rounded-full"
                             />

@@ -16,7 +16,7 @@ export const products: Product[] = [
         name: 'Groundnut',
         type: 'Oil Seed',
         description: 'Premium quality groundnuts, ideal for snacking and export markets.',
-        image: '/lovable-uploads/Groundnuts.png',
+        image: '/images/Groundnuts.png',
         longDescription: 'Our premium groundnuts are sourced from the best farms in Gujarat. They are carefully selected for their size, taste, and nutritional value. Perfect for direct consumption, roasting, or oil extraction.',
         varieties: ['G20', 'Java', 'TJ', 'Bold', 'Runner'],
         specifications: {
@@ -33,7 +33,7 @@ export const products: Product[] = [
         name: 'Peanut',
         type: 'Oil Seed',
         description: 'High-quality peanuts sourced from premium farms, available in various grades and specifications.',
-        image: '/lovable-uploads/Peanut.png',
+        image: '/images/Peanut.png',
         longDescription: 'We offer a wide variety of peanuts including Bold, Java, and TJ varieties. Our peanuts are known for their nutty flavor and crunchiness, making them a favorite in international markets.',
         varieties: ['Bold', 'Java', 'TJ', 'Blanched'],
         specifications: {
@@ -50,7 +50,7 @@ export const products: Product[] = [
         name: 'Coriander',
         type: 'Spice',
         description: 'Aromatic coriander seeds with rich flavor profiles, perfect for culinary and medicinal uses.',
-        image: '/lovable-uploads/Coriander seeds.png',
+        image: '/images/Coriander seeds.png',
         longDescription: 'Our coriander seeds are famous for their distinct aroma and golden-green color. They are widely used in spice blends and for essential oil extraction.',
         varieties: ['Eagle', 'Scooter', 'Parrot', 'Badami', 'Green'],
         specifications: {
@@ -67,7 +67,7 @@ export const products: Product[] = [
         name: 'Cumin Seed',
         type: 'Spice',
         description: 'Premium cumin seeds with strong aroma and flavor, essential for spice markets worldwide.',
-        image: '/lovable-uploads/Cumin seeds.png',
+        image: '/images/Cumin seeds.png',
         longDescription: 'Sourced from the spice bowl of India, our cumin seeds (Jeera) are known for their high essential oil content and strong flavor. A must-have spice for kitchens globally.',
         varieties: ['Singapore', 'Europe', 'Gulf', 'Grinding Quality'],
         specifications: {
@@ -84,7 +84,7 @@ export const products: Product[] = [
         name: 'Black Cumin',
         type: 'Spice',
         description: 'High-quality black cumin seeds known for their distinctive flavor and health benefits.',
-        image: '/lovable-uploads/Kalonji.png',
+        image: '/images/Kalonji.png',
         longDescription: 'Also known as Kalonji, our black cumin seeds are highly valued for their medicinal properties and unique taste. Used in baking, pickles, and traditional medicines.',
         varieties: ['Machine Clean', 'Sortex Clean'],
         specifications: {
@@ -100,7 +100,7 @@ export const products: Product[] = [
         name: 'Wheat',
         type: 'Grain',
         description: 'Premium quality wheat grains with excellent protein content and baking properties.',
-        image: '/lovable-uploads/Wheat.png',
+        image: '/images/Wheat.png',
         longDescription: 'We supply premium quality Lokwan and Sharbati wheat varieties. Our wheat is clean, golden, and high in protein, making it excellent for flour milling and baking.',
         varieties: ['Lokwan', 'Sharbati', 'Tukdi', 'Milling Quality'],
         specifications: {
@@ -117,7 +117,7 @@ export const products: Product[] = [
         name: 'Chickpea',
         type: 'Pulse',
         description: 'Premium chickpeas with excellent protein content and nutritional value for global markets.',
-        image: '/lovable-uploads/Chana.png',
+        image: '/images/Chana.png',
         longDescription: 'Our Kabuli and Desi chickpeas are known for their size, taste, and cooking quality. They are a rich source of protein and fiber.',
         varieties: ['Kabuli', 'Desi', 'Chana Dal'],
         specifications: {
@@ -134,7 +134,7 @@ export const products: Product[] = [
         name: 'Mung',
         type: 'Pulse',
         description: 'High-quality mung beans rich in protein and nutrients, perfect for various culinary applications.',
-        image: '/lovable-uploads/Mug.png',
+        image: '/images/Mug.png',
         longDescription: 'Green Mung beans are a staple in Asian cuisine. Our mung beans are uniform in size, green in color, and free from stones and impurities.',
         varieties: ['Green Mung', 'Yellow Mung Dal', 'Split Mung'],
         specifications: {
@@ -151,7 +151,7 @@ export const products: Product[] = [
         name: 'Sesame Seed',
         type: 'Oil Seed',
         description: 'Premium sesame seeds with rich oil content and nutty flavor, ideal for food and oil industries.',
-        image: '/lovable-uploads/White Sesame seed.png',
+        image: '/images/White Sesame seed.png',
         longDescription: 'We offer Natural and Hulled Sesame Seeds. They are sweet, nutty, and rich in oil. Widely used in bakery products, tahini, and confectionery.',
         varieties: ['Natural White', 'Hulled', 'Brown'],
         specifications: {
@@ -168,7 +168,7 @@ export const products: Product[] = [
         name: 'Black Sesame Seed',
         type: 'Oil Seed',
         description: 'High-quality black sesame seeds with distinctive color and enhanced nutritional benefits.',
-        image: '/lovable-uploads/Black sesame seed.png',
+        image: '/images/Black sesame seed.png',
         longDescription: 'Black sesame seeds are richer in flavor and nutrients compared to white ones. They are used for medicinal purposes and as a gourmet garnish.',
         varieties: ['Z-Black', 'Regular Black'],
         specifications: {
@@ -185,7 +185,7 @@ export const products: Product[] = [
         name: 'Soya Bean',
         type: 'Oil Seed',
         description: 'Premium soya beans with high protein content, perfect for food processing and oil extraction.',
-        image: '/lovable-uploads/Soyabean.png',
+        image: '/images/Soyabean.png',
         longDescription: 'Our premium soya beans are rich in protein and essential nutrients. They are widely used in food processing, oil extraction, and as a key ingredient in various food products.',
         varieties: ['Yellow Soya Bean', 'Black Soya Bean', 'Organic Soya Bean'],
         specifications: {
@@ -202,7 +202,7 @@ export const products: Product[] = [
         name: 'Garlic',
         type: 'Vegetable',
         description: 'Fresh and premium garlic bulbs with strong flavor and aroma, ideal for culinary and medicinal uses.',
-        image: '/lovable-uploads/Garlic.png',
+        image: '/images/Garlic.png',
         longDescription: 'Our garlic is carefully harvested and processed to maintain its natural flavor, aroma, and nutritional benefits. Known for its culinary versatility and health benefits.',
         varieties: ['Single Clove', 'Multi Clove', 'Organic Garlic'],
         specifications: {
@@ -219,7 +219,7 @@ export const products: Product[] = [
         name: 'Onion',
         type: 'Vegetable',
         description: 'Fresh onions with excellent quality and taste, available in various sizes for different market needs.',
-        image: '/lovable-uploads/Onion.png',
+        image: '/images/Onion.png',
         longDescription: 'We offer premium quality onions that are sweet, pungent, and perfect for cooking. Our onions are known for their crisp texture and long storage life.',
         varieties: ['Red Onion', 'White Onion', 'Yellow Onion', 'Shallot'],
         specifications: {

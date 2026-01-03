@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { resolveImagePath } from '@/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -85,7 +86,7 @@ const Products = () => {
                             <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md h-full flex flex-col">
                                 <div className="relative overflow-hidden h-56">
                                     <img
-                                        src={product.image}
+                                        src={resolveImagePath(product.image)}
                                         alt={product.name}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         loading="lazy"

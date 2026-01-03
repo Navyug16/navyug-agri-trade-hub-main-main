@@ -32,7 +32,7 @@ const Header = () => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
                             <img
-                                src="/logo-new.jpg"
+                                src="/images/logo-new.jpg"
                                 alt="NAVYUG ENTERPRISE Logo"
                                 className="w-16 h-16 object-contain rounded-full mix-blend-multiply"
                             />

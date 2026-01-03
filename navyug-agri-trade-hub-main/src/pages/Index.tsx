@@ -1,4 +1,5 @@
 
+import { resolveImagePath } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Mail, Phone, MapPin, Truck, Globe, Award, ShoppingCart, Facebook, Twitter, Instagram, Linkedin, Star, Sprout, Leaf, Sun, CloudSun, FileCheck, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -299,7 +300,7 @@ const Index = () => {
                   </div>
                   <div className="relative overflow-hidden h-48">
                     <img
-                      src={product.image}
+                      src={resolveImagePath(product.image)}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"

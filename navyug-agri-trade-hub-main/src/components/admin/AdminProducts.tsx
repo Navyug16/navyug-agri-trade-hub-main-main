@@ -1,3 +1,4 @@
+import { resolveImagePath } from '@/lib/utils';
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -64,7 +65,7 @@ const AdminProducts = ({ products, onDelete, onEdit, onMove }: AdminProductsProp
                   </div>
                 </TableCell>
                 <TableCell>
-                  <img src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded" />
+                  <img src={resolveImagePath(product.image)} alt={product.name} className="w-10 h-10 object-cover rounded" />
                 </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.type}</TableCell>
