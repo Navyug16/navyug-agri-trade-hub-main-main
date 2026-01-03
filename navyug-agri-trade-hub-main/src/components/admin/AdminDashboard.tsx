@@ -658,11 +658,11 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteInquiry = async (id: string) => {
-    if (!window.confirm("Are you sure? This will permanently delete the inquiry.")) return;
+    if (!window.confirm("Are you sure you want to delete this inquiry? It will be removed from the list but kept for analytics.")) return;
     try {
-      await deleteDoc(doc(db, "inquiries", id));
-      setInquiries(prev => prev.filter(i => i.id !== id));
-      toast({ title: "Inquiry Deleted", description: "Inquiry has been permanently removed." });
+      await updateDoc(doc(db, "inquiries", id), { isDeleted: true });
+      setInquiries(prev => prev.map(i => i.id === id ? { ...i, isDeleted: true } : i));
+      toast({ title: "Inquiry Deleted", description: "Inquiry removed from list (kept in history)." });
     } catch (error) {
       console.error("Error deleting inquiry: ", error);
       toast({ title: "Error", description: "Failed to delete inquiry", variant: "destructive" });
