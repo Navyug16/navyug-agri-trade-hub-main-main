@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS Diagnostic Test</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+        (function () {
+            // Initialize EmailJS with your Public Key
+            emailjs.init("B8OxCKHew1JXcmRsG");
+        })();
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 40px;
+        }
+
+        .card {
+            max-width: 500px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #0070f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0051a2;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #f0f0f0;
+            white-space: pre-wrap;
+        }
+
+        .error {
+            color: red;
+            background: #ffe6e6 !important;
+        }
+
+        .success {
+            color: green;
+            background: #e6ffe6 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>EmailJS Diagnostic</h1>
+        <p>This page sends a direct test email using the raw EmailJS library, bypassing the React app logic.</p>
+
+        <div style="margin-bottom: 15px;">
+            <label><strong>Service ID:</strong> service_1</label><br>
+            <label><strong>Template ID:</strong> template_AN</label><br>
+            <label><strong>Public Key:</strong> B8OxCKHew1JXcmRsG</label>
+        </div>
+
+        <button onclick="sendTestEmail()" id="btn">Send Test Email Now</button>
+
+        <div id="status">Ready to test...</div>
+    </div>
+
+    <script>
+        function sendTestEmail() {
+            const btn = document.getElementById('btn');
+            const status = document.getElementById('status');
+
+            btn.disabled = true;
+            status.textContent = "Sending...";
+            status.className = "";
+
+            // Hardcoded test parameters
+            const templateParams = {
+                to_email: "navyugmgalani@gmail.com", // Admin Email
+                to_name: "Admin Debugger",
+                from_name: "Diagnostic Page",
+                message: "This is a direct API test from the generated diagnostic page.",
+                subject: "Diagnostic Test Email",
+                reply_to: "test@example.com"
+            };
+
+            console.log("Sending with params:", templateParams);
+
+            emailjs.send('service_1', 'template_AN', templateParams)
+                .then(function (response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    status.textContent = "SUCCESS! EmailJS Server responded with: " + response.status + " " + response.text + "\n\nIf you see this green message, the code is working perfectly.\nCheck your 'All Mail' and 'Spam' folders.";
+                    status.className = "success";
+                    btn.disabled = false;
+                }, function (error) {
+                    console.log('FAILED...', error);
+                    status.textContent = "FAILED: " + JSON.stringify(error);
+                    status.className = "error";
+                    btn.disabled = false;
+                });
+        }
+    </script>
+</body>
+
+</html>
