@@ -67,16 +67,24 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
     if (!inquiries.length) return [];
 
     const grouped = inquiries.reduce((acc: any, curr: any) => {
-      const date = new Date(curr.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const dateObj = new Date(curr.created_at);
+      const date = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
       if (!acc[date]) {
-        acc[date] = { name: date, inquiries: 0, value: 0 };
+        acc[date] = {
+          name: date,
+          inquiries: 0,
+          value: 0,
+          timestamp: dateObj.setHours(0, 0, 0, 0) // Store timestamp for sorting
+        };
       }
       acc[date].inquiries += 1;
       acc[date].value += (curr.dealValue || 0);
       return acc;
     }, {});
 
-    return Object.values(grouped);
+    // Sort by timestamp ascending (Oldest -> Newest)
+    return Object.values(grouped).sort((a: any, b: any) => a.timestamp - b.timestamp);
   }, [inquiries]);
 
   // 2. Status Distribution Data
