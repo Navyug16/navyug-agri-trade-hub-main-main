@@ -46,13 +46,15 @@ const STATUS_COLORS: Record<string, string> = {
   'closed_won': '#10b981', // emerald
   'closed_lost': '#ef4444', // red
   'closed': '#6b7280', // gray
+  'done': '#10b981', // emerald (same as won)
+  'deleted': '#ef4444', // red
 };
 
 const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }: AdminOverviewProps) => {
   // Top Products logic removed as per user request
 
 
-  // 1. Trend Data: Inquiries count and Deal Value sum per day
+  // 1. Trend Data: Inquiries count by status per day
   const trendData = useMemo(() => {
     if (!inquiries.length) return [];
 
@@ -63,13 +65,29 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
       if (!acc[date]) {
         acc[date] = {
           name: date,
-          inquiries: 0,
-          value: 0,
+          pending: 0,
+          in_progress: 0,
+          done: 0,
+          deleted: 0,
           timestamp: dateObj.setHours(0, 0, 0, 0) // Store timestamp for sorting
         };
       }
-      acc[date].inquiries += 1;
-      acc[date].value += (curr.dealValue || 0);
+
+      if (curr.isDeleted) {
+        acc[date].deleted += 1;
+      } else {
+        const status = curr.status || 'pending';
+        if (status === 'pending') {
+          acc[date].pending += 1;
+        } else if (status === 'in_progress') {
+          acc[date].in_progress += 1;
+        } else if (['closed', 'closed_won', 'closed_lost'].includes(status)) {
+          acc[date].done += 1;
+        } else {
+          // Fallback
+          acc[date].pending += 1;
+        }
+      }
       return acc;
     }, {});
 
@@ -82,7 +100,17 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
     if (!inquiries.length) return [];
 
     const counts = inquiries.reduce((acc: any, curr: any) => {
-      const status = curr.status || 'pending';
+      let status;
+      if (curr.isDeleted) {
+        status = 'deleted';
+      } else {
+        const rawStatus = curr.status || 'pending';
+        if (['closed', 'closed_won', 'closed_lost'].includes(rawStatus)) {
+          status = 'done';
+        } else {
+          status = rawStatus;
+        }
+      }
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {});
@@ -109,9 +137,8 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
         <div className="bg-white p-4 border rounded-lg shadow-lg">
           <p className="font-bold text-gray-700 mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
-              {entry.name === 'value' ? 'Sales Value' : entry.name === 'inquiries' ? 'Inquiries' : entry.name}:
-              {entry.name === 'value' ? ` ₹${entry.value.toLocaleString()}` : ` ${entry.value}`}
+            <p key={index} style={{ color: entry.color }} className="text-sm font-medium capitalize">
+              {entry.name.replace('_', ' ')}: {entry.value}
             </p>
           ))}
         </div>
@@ -171,33 +198,30 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
       {/* Main Analytics Section - Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* 1. Sales & Inquiry Trends (Wide Chart) */}
+        {/* 1. Inquiry Status Trends (Line Chart) */}
         <Card className="col-span-1 lg:col-span-2 shadow-md border-none bg-white">
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Activity className="h-5 w-5 text-indigo-600" />
-              Sales & Inquiry Volume
+              Inquiry Status Trends
             </CardTitle>
-            <CardDescription>Daily breakdown of inquiries and total deal value</CardDescription>
+            <CardDescription>Real-time updates of inquiry status over time</CardDescription>
           </CardHeader>
           <CardContent className="h-[400px]">
             {trendData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={trendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <defs>
-                    <linearGradient id="colorInquiries" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                   <XAxis dataKey="name" scale="point" padding={{ left: 20, right: 20 }} stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis yAxisId="left" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis yAxisId="right" orientation="right" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value / 1000}k`} />
+                  <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                  <Bar yAxisId="left" dataKey="inquiries" name="Inquiries" fill="url(#colorInquiries)" radius={[4, 4, 0, 0]} barSize={40} />
-                  <Line yAxisId="right" type="monotone" dataKey="value" name="Sales Value" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 8 }} />
+
+                  <Line type="monotone" dataKey="pending" name="Pending" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="in_progress" name="In Progress" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="done" name="Done" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="deleted" name="Deleted" stroke="#ef4444" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+
                 </ComposedChart>
               </ResponsiveContainer>
             ) : (
