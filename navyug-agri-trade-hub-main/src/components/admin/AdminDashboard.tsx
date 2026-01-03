@@ -397,6 +397,8 @@ const ProductDialogForm = ({
 
 
 
+import AddInquiryDialog from './AddInquiryDialog';
+
 const AdminDashboard = () => {
   const { admin, logout } = useAdminAuth();
   const { toast } = useToast();
@@ -436,6 +438,27 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error updating labels:", error);
       toast({ title: "Error", description: "Failed to update labels", variant: "destructive" });
+    }
+  };
+
+  // Add Inquiry State
+  const [isAddInquiryOpen, setIsAddInquiryOpen] = useState(false);
+  const [initialInquiryStatus, setInitialInquiryStatus] = useState('pending');
+
+  const startAddInquiry = (status: string) => {
+    setInitialInquiryStatus(status);
+    setIsAddInquiryOpen(true);
+  };
+
+  const handleSaveNewInquiry = async (data: any) => {
+    try {
+      const docRef = await addDoc(collection(db, "inquiries"), data);
+      const newInquiry = { id: docRef.id, ...data };
+      setInquiries(prev => [newInquiry, ...prev]);
+      toast({ title: "Inquiry Added", description: "New lead added to pipeline." });
+    } catch (error) {
+      console.error("Error adding inquiry:", error);
+      toast({ title: "Error", description: "Failed to add inquiry.", variant: "destructive" });
     }
   };
 
@@ -792,9 +815,17 @@ const AdminDashboard = () => {
                 onUpdateStatus={(id, status) => handleUpdateInquiry(id, { status })}
                 onUpdateLabels={handleUpdateLabels}
                 onDelete={handleDeleteInquiry}
+                onAddInquiry={startAddInquiry}
+              />
+              <AddInquiryDialog
+                isOpen={isAddInquiryOpen}
+                onClose={() => setIsAddInquiryOpen(false)}
+                onSave={handleSaveNewInquiry}
+                initialStatus={initialInquiryStatus}
               />
             </div>
           )}
+
 
           {activeTab === 'inquiries' && (
             <div className="relative z-10">

@@ -29,6 +29,7 @@ interface AdminPipelineProps {
     onUpdateStatus: (id: string, newStatus: any) => void;
     onUpdateLabels: (id: string, labels: string[]) => void;
     onDelete: (id: string) => void;
+    onAddInquiry: (initialStatus: string) => void;
 }
 
 const COLUMNS = [
@@ -39,7 +40,7 @@ const COLUMNS = [
     { id: 'closed_lost', title: 'Lost', color: 'bg-red-100 border-red-200' }
 ];
 
-const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete }: AdminPipelineProps) => {
+const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, onAddInquiry }: AdminPipelineProps) => {
     const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
     const [isLabelDialogOpen, setIsLabelDialogOpen] = useState(false);
     const [newLabel, setNewLabel] = useState('');
@@ -98,10 +99,13 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete }: 
                                         <h3 className="font-bold text-gray-700">{column.title}</h3>
                                         <p className="text-xs text-gray-500 mt-1">{columnInquiries.length} leads</p>
                                     </div>
-                                    <div className="text-right">
+                                    <div className="text-right flex items-center gap-2">
                                         <p className="text-xs font-semibold text-gray-600">
                                             ₹{totalValue.toLocaleString()}
                                         </p>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-black/10" onClick={() => onAddInquiry(column.id)}>
+                                            <Plus className="h-4 w-4 text-gray-600" />
+                                        </Button>
                                     </div>
                                 </div>
 

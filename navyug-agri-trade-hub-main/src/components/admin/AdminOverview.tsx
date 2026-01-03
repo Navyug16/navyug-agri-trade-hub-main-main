@@ -136,6 +136,12 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
     return null;
   };
 
+  // Check if we should show Pie Chart
+  // "if any one inquery is pending or in progress then pia chart is show"
+  const showPieChart = useMemo(() => {
+    return inquiries.some(i => !i.isDeleted && (i.status === 'pending' || i.status === 'in_progress'));
+  }, [inquiries]);
+
   return (
     <div className="space-y-6 mb-8 h-full flex flex-col overflow-y-auto pr-2">
       {/* Key Metrics Strip */}
@@ -187,9 +193,8 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
       {/* Main Analytics Section - Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* 1. Inquiry Status Trends (Line Chart) */}
         {/* 1. Deals & Inquiry Trends */}
-        <Card className="col-span-1 lg:col-span-2 shadow-md border-none bg-white">
+        <Card className={`col-span-1 ${showPieChart ? 'lg:col-span-2' : 'lg:col-span-3'} shadow-md border-none bg-white`}>
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Activity className="h-5 w-5 text-indigo-600" />
@@ -226,45 +231,47 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
           </CardContent>
         </Card>
 
-        {/* 2. Inquiry Status Distribution (Pie Chart) */}
-        <Card className="col-span-1 shadow-md border-none bg-white">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <PieChartIcon className="h-5 w-5 text-indigo-600" />
-              Inquiry Status
-            </CardTitle>
-            <CardDescription>Current distribution of leads</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[400px]">
-            {statusData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={statusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {statusData.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.rawStatus] || COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                <PieChartIcon className="h-12 w-12 mb-3 opacity-20" />
-                <p>No status data available</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* 2. Inquiry Status Distribution (Pie Chart) - Conditionally Rendered */}
+        {showPieChart && (
+          <Card className="col-span-1 shadow-md border-none bg-white">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <PieChartIcon className="h-5 w-5 text-indigo-600" />
+                Inquiry Status
+              </CardTitle>
+              <CardDescription>Current distribution of leads</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[400px]">
+              {statusData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {statusData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.rawStatus] || COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                  <PieChartIcon className="h-12 w-12 mb-3 opacity-20" />
+                  <p>No status data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
 
 
