@@ -49,18 +49,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }: AdminOverviewProps) => {
-  const [showTopProducts, setShowTopProducts] = useState(false);
+  // Top Products logic removed as per user request
 
-  // Find top product name
-  const topProductName = stats.topProducts
-    ? Object.entries(stats.topProducts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A'
-    : 'N/A';
-
-  const top3Products = stats.topProducts
-    ? Object.entries(stats.topProducts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-    : [];
 
   // 1. Trend Data: Inquiries count and Deal Value sum per day
   const trendData = useMemo(() => {
@@ -133,7 +123,7 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
   return (
     <div className="space-y-6 mb-8 h-full flex flex-col overflow-y-auto pr-2">
       {/* Key Metrics Strip */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
         <Card className="border-l-4 border-l-emerald-600 shadow-sm bg-white/80 backdrop-blur hover:shadow-md transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Total Earnings</CardTitle>
@@ -175,21 +165,7 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
           </CardContent>
         </Card>
 
-        <Card
-          className="border-l-4 border-l-amber-500 shadow-sm bg-white/80 backdrop-blur cursor-pointer hover:shadow-md transition-all duration-300"
-          onClick={() => setShowTopProducts(true)}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Top Product</CardTitle>
-            <div className="p-2 bg-amber-100 rounded-full">
-              <Award className="h-4 w-4 text-amber-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold text-gray-900 truncate" title={topProductName}>{topProductName}</div>
-            <p className="text-xs text-muted-foreground mt-1">Most requested item</p>
-          </CardContent>
-        </Card>
+
       </div>
 
       {/* Main Analytics Section - Grid Layout */}
@@ -273,67 +249,11 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
           </CardContent>
         </Card>
 
-        {/* 3. Top Products (Horizontal Bar Chart) */}
-        <Card className="col-span-1 lg:col-span-3 shadow-md border-none bg-white">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Award className="h-5 w-5 text-indigo-600" />
-              Product Performance
-            </CardTitle>
-            <CardDescription>Top products by inquiry volume</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px]">
-            {productInterestData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart layout="vertical" data={productInterestData} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
-                  <XAxis type="number" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis dataKey="name" type="category" stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} width={100} />
-                  <Tooltip cursor={{ fill: '#f9fafb' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                  <Bar dataKey="value" name="Inquiries" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={32}>
-                    {productInterestData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                <Award className="h-12 w-12 mb-3 opacity-20" />
-                <p>No product data available</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+
 
       </div>
 
-      <Dialog open={showTopProducts} onOpenChange={setShowTopProducts}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Top Performing Products</DialogTitle>
-            <DialogDescription>Based on inquiry volume.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            {top3Products.length > 0 ? (
-              top3Products.map(([name, count], index) => (
-                <div key={name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-white ${index === 0 ? 'bg-amber-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-700'
-                      }`}>
-                      {index + 1}
-                    </div>
-                    <div className="font-medium text-gray-900">{name}</div>
-                  </div>
-                  <div className="text-sm text-gray-500 font-semibold">{count} Inquiries</div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center text-gray-500">No data available yet.</div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 };

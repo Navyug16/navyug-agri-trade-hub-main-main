@@ -18,21 +18,7 @@ const ContactForm = () => {
     quantity: '',
     message: ''
   });
-  const [availableProducts, setAvailableProducts] = useState<string[]>([]);
 
-  React.useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const q = query(collection(db, "products"), orderBy("name"));
-        const querySnapshot = await getDocs(q);
-        const products = querySnapshot.docs.map(doc => doc.data().name);
-        setAvailableProducts(products);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchProducts();
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -183,26 +169,15 @@ const ContactForm = () => {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Purpose / Product</label>
-          <select
+          <input
+            type="text"
             name="subject"
             value={formData.subject}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
-          >
-            <option value="" disabled>Select an option</option>
-            <optgroup label="General">
-              <option value="Meeting Request">Meeting Request</option>
-              <option value="General Inquiry">General Inquiry</option>
-            </optgroup>
-            <optgroup label="Products">
-              {availableProducts.map((product) => (
-                <option key={product} value={product}>
-                  {product}
-                </option>
-              ))}
-            </optgroup>
-          </select>
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            placeholder="e.g. Groundnut Oil or General Inquiry"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
