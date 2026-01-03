@@ -837,44 +837,41 @@ const AdminDashboard = () => {
 
           {activeTab === 'products' && (
             <div>
-              <div className="flex justify-between mb-4">
-                <h2 className="text-xl font-bold sr-only">Products List</h2>
-                <div className="flex gap-2 w-full justify-end">
-                  {products.length === 0 && (
-                    <Button variant="outline" onClick={handleSeedProducts} disabled={loading}>
-                      <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
-                    </Button>
-                  )}
-
-                  <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={startAddProduct}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Product
+              <AdminProducts
+                products={products}
+                onMove={handleMoveProduct}
+                onEdit={startEditProduct}
+                onDelete={handleDeleteProduct}
+                headerAction={
+                  <div className="flex gap-2">
+                    {products.length === 0 && (
+                      <Button variant="outline" onClick={handleSeedProducts} disabled={loading}>
+                        <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
                       </Button>
-                    </DialogTrigger>
-                    <ProductDialogForm
-                      title="Add New Product"
-                      currentProduct={currentProduct}
-                      setCurrentProduct={setCurrentProduct}
-                      handleSaveProduct={handleSaveProduct}
-                      saving={saving}
-                      onCancel={() => {
-                        setIsAddProductOpen(false);
-                        setIsEditProductOpen(false);
-                        setCurrentProduct({});
-                      }}
-                      isEditMode={!!currentProduct.id && isEditProductOpen}
-                    />
-                  </Dialog>
-                </div>
-
-                <AdminProducts
-                  products={products}
-                  onMove={handleMoveProduct}
-                  onEdit={startEditProduct}
-                  onDelete={handleDeleteProduct}
-                />
-              </div>
+                    )}
+                    <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+                      <DialogTrigger asChild>
+                        <Button onClick={startAddProduct}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Product
+                        </Button>
+                      </DialogTrigger>
+                      <ProductDialogForm
+                        title="Add New Product"
+                        currentProduct={currentProduct}
+                        setCurrentProduct={setCurrentProduct}
+                        handleSaveProduct={handleSaveProduct}
+                        saving={saving}
+                        onCancel={() => {
+                          setIsAddProductOpen(false);
+                          setIsEditProductOpen(false);
+                          setCurrentProduct({});
+                        }}
+                        isEditMode={!!currentProduct.id && isEditProductOpen}
+                      />
+                    </Dialog>
+                  </div>
+                }
+              />
             </div>
           )}
 

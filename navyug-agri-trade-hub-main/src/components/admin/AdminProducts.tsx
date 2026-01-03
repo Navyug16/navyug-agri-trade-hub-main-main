@@ -18,14 +18,18 @@ interface AdminProductsProps {
   onDelete: (id: string) => void;
   onEdit: (product: Product) => void;
   onMove: (id: string, direction: 'up' | 'down') => void;
+  headerAction?: React.ReactNode;
 }
 
-const AdminProducts = ({ products, onDelete, onEdit, onMove }: AdminProductsProps) => {
+const AdminProducts = ({ products, onDelete, onEdit, onMove, headerAction }: AdminProductsProps) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Products Management</CardTitle>
-        <CardDescription>View and manage your products</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Products Management</CardTitle>
+          <CardDescription>View and manage your products</CardDescription>
+        </div>
+        {headerAction}
       </CardHeader>
       <CardContent>
         <Table>
