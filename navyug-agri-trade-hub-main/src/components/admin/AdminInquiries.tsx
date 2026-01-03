@@ -33,7 +33,7 @@ interface Inquiry {
   product_interest: string;
   quantity?: string; // New field
   message: string;
-  status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost'; // Updated status types
+  status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost' | 'ghosted'; // Updated status types
   dealValue?: number;
   notes?: string;
   replyHistory?: EmailReply[];
@@ -269,6 +269,7 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
       case 'closed': return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">Closed</Badge>;
       case 'closed_won': return <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Won</Badge>;
       case 'closed_lost': return <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">Lost</Badge>;
+      case 'ghosted': return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">Ghosted</Badge>;
       default: return <Badge variant="outline">Unknown</Badge>;
     }
   };
@@ -546,6 +547,9 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="closed">Closed</SelectItem>
+                        <SelectItem value="closed_won">Won</SelectItem>
+                        <SelectItem value="closed_lost">Lost</SelectItem>
+                        <SelectItem value="ghosted">Ghosted</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AdminPipeline from './AdminPipeline';
 import { useSearchParams } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { db } from '@/lib/firebase';
@@ -43,13 +44,14 @@ interface Inquiry {
   phone?: string;
   product_interest: string;
   message: string;
-  status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost';
+  status: 'pending' | 'in_progress' | 'closed' | 'closed_won' | 'closed_lost' | 'ghosted';
   dealValue?: number;
   notes?: string;
   created_at: string;
   date: any;
   time_string: string;
   isDeleted?: boolean;
+  labels?: string[];
 }
 
 interface Product {
@@ -393,6 +395,8 @@ const ProductDialogForm = ({
   );
 };
 
+
+
 const AdminDashboard = () => {
   const { admin, logout } = useAdminAuth();
   const { toast } = useToast();
@@ -422,6 +426,18 @@ const AdminDashboard = () => {
     specifications: {},
     features: []
   });
+
+  const handleUpdateLabels = async (id: string, labels: string[]) => {
+    try {
+      const inquiryRef = doc(db, "inquiries", id);
+      await updateDoc(inquiryRef, { labels });
+      setInquiries(prev => prev.map(i => i.id === id ? { ...i, labels } : i));
+      toast({ title: "Labels Updated", description: "Inquiry labels saved." });
+    } catch (error) {
+      console.error("Error updating labels:", error);
+      toast({ title: "Error", description: "Failed to update labels", variant: "destructive" });
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -725,7 +741,7 @@ const AdminDashboard = () => {
     <div className="flex h-screen overflow-hidden bg-gray-100">
       {/* Sidebar Navigation */}
       <AdminNavigation
-        activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs'}
+        activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline'}
         onTabChange={setActiveTab}
         pendingInquiries={stats.pendingInquiries}
         onLogout={logout}
@@ -767,6 +783,17 @@ const AdminDashboard = () => {
               onInquiryClick={() => setActiveTab('inquiries')}
               onProductClick={() => setActiveTab('products')}
             />
+          )}
+
+          {activeTab === 'pipeline' && (
+            <div className="h-full">
+              <AdminPipeline
+                inquiries={activeInquiries}
+                onUpdateStatus={(id, status) => handleUpdateInquiry(id, { status })}
+                onUpdateLabels={handleUpdateLabels}
+                onDelete={handleDeleteInquiry}
+              />
+            </div>
           )}
 
           {activeTab === 'inquiries' && (
@@ -811,9 +838,9 @@ const AdminDashboard = () => {
 
                 <AdminProducts
                   products={products}
-                  onMoveProduct={handleMoveProduct}
-                  onEditProduct={startEditProduct}
-                  onDeleteProduct={handleDeleteProduct}
+                  onMove={handleMoveProduct}
+                  onEdit={startEditProduct}
+                  onDelete={handleDeleteProduct}
                 />
               </div>
             </div>

@@ -54,7 +54,7 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
   // Top Products logic removed as per user request
 
 
-  // 1. Trend Data: Inquiries count by status per day
+  // 1. Trend Data: Sales & Inquiries per day
   const trendData = useMemo(() => {
     if (!inquiries.length) return [];
 
@@ -65,33 +65,22 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
       if (!acc[date]) {
         acc[date] = {
           name: date,
-          pending: 0,
-          in_progress: 0,
-          done: 0,
-          deleted: 0,
-          timestamp: dateObj.setHours(0, 0, 0, 0) // Store timestamp for sorting
+          inquiries: 0,
+          value: 0,
+          timestamp: dateObj.setHours(0, 0, 0, 0)
         };
       }
 
-      if (curr.isDeleted) {
-        acc[date].deleted += 1;
-      } else {
-        const status = curr.status || 'pending';
-        if (status === 'pending') {
-          acc[date].pending += 1;
-        } else if (status === 'in_progress') {
-          acc[date].in_progress += 1;
-        } else if (['closed', 'closed_won', 'closed_lost'].includes(status)) {
-          acc[date].done += 1;
-        } else {
-          // Fallback
-          acc[date].pending += 1;
-        }
-      }
+      // We process ALL inquiries (even deleted ones) for historical trends if they are in the list.
+      // If the user wants to exclude "lost" from money, we can, but usually "dealValue" implies potential or won.
+      // Assuming 'value' is 'dealValue' regardless of status, or strictly 'closed_won'?
+      // The prompt says "Inquery budget", which usually exists even if pending.
+      acc[date].inquiries += 1;
+      acc[date].value += (curr.dealValue || 0);
+
       return acc;
     }, {});
 
-    // Sort by timestamp ascending (Oldest -> Newest)
     return Object.values(grouped).sort((a: any, b: any) => a.timestamp - b.timestamp);
   }, [inquiries]);
 
@@ -199,13 +188,14 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* 1. Inquiry Status Trends (Line Chart) */}
+        {/* 1. Deals & Inquiry Trends */}
         <Card className="col-span-1 lg:col-span-2 shadow-md border-none bg-white">
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Activity className="h-5 w-5 text-indigo-600" />
-              Inquiry Status Trends
+              Inquiry & Budget Trends
             </CardTitle>
-            <CardDescription>Real-time updates of inquiry status over time</CardDescription>
+            <CardDescription>Daily deal value and inquiry volume</CardDescription>
           </CardHeader>
           <CardContent className="h-[400px]">
             {trendData.length > 0 ? (
@@ -213,15 +203,18 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
                 <ComposedChart data={trendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                   <XAxis dataKey="name" scale="point" padding={{ left: 20, right: 20 }} stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+
+                  {/* Left Axis: Money */}
+                  <YAxis yAxisId="left" stroke="#10b981" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+
+                  {/* Right Axis: Count */}
+                  <YAxis yAxisId="right" orientation="right" stroke="#6366f1" fontSize={12} tickLine={false} axisLine={false} />
+
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
 
-                  <Line type="monotone" dataKey="pending" name="Pending" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="in_progress" name="In Progress" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="done" name="Done" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="deleted" name="Deleted" stroke="#ef4444" strokeWidth={3} strokeDasharray="5 5" dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-
+                  <Bar yAxisId="right" dataKey="inquiries" name="Inquiries" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30} fillOpacity={0.6} />
+                  <Line yAxisId="left" type="monotone" dataKey="value" name="Deal Value" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 8 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             ) : (
