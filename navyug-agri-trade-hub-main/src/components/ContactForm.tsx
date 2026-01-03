@@ -64,12 +64,12 @@ const ContactForm = () => {
       setFormData({ name: '', email: '', phone: '', subject: '', quantity: '', message: '' });
 
       // Send Notification to Admin
-      const adminEmail = 'navyugenterprise2003@gmail.com';
+      const adminEmail = 'navyugmgalani@gmail.com';
       // ---------------------------------------------------------
       // EmailJS Template IDs
       // ---------------------------------------------------------
-      const ADMIN_TEMPLATE_ID = 'template_mv2fuil';
-      const USER_THANK_YOU_TEMPLATE_ID = 'template_u7suhcr';
+      const ADMIN_TEMPLATE_ID = 'template_AN';
+      const USER_THANK_YOU_TEMPLATE_ID = 'template_UTY';
       // ---------------------------------------------------------
 
       // 1. Send Admin Notification
