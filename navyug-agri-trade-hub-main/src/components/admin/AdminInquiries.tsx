@@ -365,7 +365,6 @@ const AdminInquiries = ({ inquiries = [], onUpdateInquiry, onDelete }: AdminInqu
                           e.stopPropagation();
                           if (window.confirm("Are you sure you want to delete this inquiry?")) {
                             onDelete(inquiry.id);
-                            setInquiries(prev => prev.filter(i => i.id !== inquiry.id));
                           }
                         }}>
                           <Trash2 className="h-4 w-4" />

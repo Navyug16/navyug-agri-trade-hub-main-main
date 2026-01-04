@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { db } from '@/lib/firebase';
 import { resolveImagePath } from '@/lib/utils';
+import { format } from "date-fns";
 import {
   collection,
   getDocs,
@@ -487,18 +488,24 @@ const AdminDashboard = () => {
       // Process Inquiries
       const fetchedInquiries: Inquiry[] = inquiriesSnapshot.docs.map((doc) => {
         const data = doc.data();
+        const createdAtDate = data.created_at?.toDate() || new Date();
         return {
           id: doc.id,
           name: data.name,
           email: data.email,
           phone: data.phone,
           product_interest: data.product_interest,
+          quantity: data.quantity,
           message: data.message,
           status: data.status || 'pending',
           dealValue: data.dealValue || 0,
           notes: data.notes || '',
-          created_at: data.created_at?.toDate().toISOString() || new Date().toISOString(),
+          replyHistory: data.replyHistory || [],
+          created_at: createdAtDate.toISOString(),
+          date: createdAtDate,
+          time_string: format(createdAtDate, 'hh:mm a'),
           isDeleted: data.isDeleted || false,
+          labels: data.labels || [],
         } as Inquiry;
       });
       // Sort inquiries (newest first)
