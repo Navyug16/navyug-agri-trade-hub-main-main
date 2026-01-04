@@ -3,6 +3,7 @@ import AdminPipeline from './AdminPipeline';
 import { useSearchParams } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { db } from '@/lib/firebase';
+import { resolveImagePath } from '@/lib/utils';
 import {
   collection,
   getDocs,
@@ -242,6 +243,8 @@ const ProductDialogForm = ({
           />
         </div>
 
+
+
         {/* Image Upload */}
         <div className="space-y-2">
           <Label>Product Images (First one is cover)</Label>
@@ -249,7 +252,7 @@ const ProductDialogForm = ({
             {currentProduct.images && currentProduct.images.length > 0 ? (
               currentProduct.images.map((img, idx) => (
                 <div key={idx} className="relative group aspect-square">
-                  <img src={img} alt={`Product ${idx}`} className="w-full h-full object-cover rounded border" />
+                  <img src={resolveImagePath(img)} alt={`Product ${idx}`} className="w-full h-full object-cover rounded border" />
                   <button
                     type="button"
                     onClick={() => removeImage(idx)}
@@ -263,7 +266,7 @@ const ProductDialogForm = ({
             ) : (
               currentProduct.image && (
                 <div className="relative group aspect-square">
-                  <img src={currentProduct.image} alt="Preview" className="w-full h-full object-cover rounded border" />
+                  <img src={resolveImagePath(currentProduct.image)} alt="Preview" className="w-full h-full object-cover rounded border" />
                   <button
                     type="button"
                     onClick={() => setCurrentProduct(prev => ({ ...prev, image: '', images: [] }))}

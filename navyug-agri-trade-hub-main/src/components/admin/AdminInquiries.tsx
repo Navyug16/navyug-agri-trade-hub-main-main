@@ -71,11 +71,9 @@ const EMAIL_TEMPLATES: Record<string, { label: string, subject: string, body: st
 };
 
 
-const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
+const AdminInquiries = ({ inquiries = [], onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
   const { toast } = useToast();
   const { admin } = useAdminAuth(); // Get current admin info
-  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'in_progress' | 'closed'>('all');
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -93,45 +91,6 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
   // Internal Notes State
   const [notesInput, setNotesInput] = useState<string>('');
 
-  useEffect(() => {
-    fetchInquiries();
-  }, []);
-
-  const fetchInquiries = async () => {
-    try {
-      setLoading(true);
-      const q = query(collection(db, "inquiries"), orderBy("created_at", "desc"));
-      const querySnapshot = await getDocs(q);
-
-      const fetchedInquiries: Inquiry[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        fetchedInquiries.push({
-          id: doc.id,
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          product_interest: data.product_interest,
-          quantity: data.quantity, // Fetch quantity
-          message: data.message,
-          status: data.status,
-          dealValue: data.dealValue,
-          notes: data.notes,
-          replyHistory: data.replyHistory || [],
-          date: data.created_at?.toDate() || new Date(), // 3. Map Firestore created_at to Local date
-          time_string: data.time_string || format(data.created_at?.toDate() || new Date(), 'hh:mm a') // 3. Map Firestore created_at to Local time_string if not present
-        } as Inquiry);
-      });
-
-      setInquiries(fetchedInquiries);
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-      toast({ title: "Error", description: "Failed to load inquiries", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const filteredInquiries = inquiries.filter(inquiry => {
     const matchesSearch =
       inquiry.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,20 +103,12 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
   });
 
   const handleStatusUpdate = async (inquiryId: string, newStatus: Inquiry['status']) => {
-    try {
-      await updateDoc(doc(db, "inquiries", inquiryId), { status: newStatus });
-
-      // Update local state
-      setInquiries(prev => prev.map(i => i.id === inquiryId ? { ...i, status: newStatus } : i));
-      if (selectedInquiry && selectedInquiry.id === inquiryId) {
-        setSelectedInquiry(prev => prev ? ({ ...prev, status: newStatus }) : null);
-      }
-      onUpdateInquiry(inquiryId, { status: newStatus });
-
-      toast({ title: "Status Updated", description: `Inquiry marked as ${newStatus.replace('_', ' ')} ` });
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
+    // Optimistic update handled by parent via onUpdateInquiry
+    if (selectedInquiry && selectedInquiry.id === inquiryId) {
+      setSelectedInquiry(prev => prev ? ({ ...prev, status: newStatus }) : null);
     }
+    // Update Parent (which updates Firestore)
+    onUpdateInquiry(inquiryId, { status: newStatus });
   };
 
   const handleTemplateSelect = (templateKey: string) => {
@@ -196,7 +147,6 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
     });
 
     if (result.success) {
-      // 4. Remove mocked check in handleSendReply.
       toast({ title: "Email Sent", description: "Reply sent successfully." });
       // Log history
       const newReply: EmailReply = {
@@ -209,35 +159,23 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
 
       const updatedHistory = [...(selectedInquiry.replyHistory || []), newReply];
 
-      // Update Firestore
-      try {
-        await updateDoc(doc(db, "inquiries", selectedInquiry.id), {
-          replyHistory: updatedHistory,
-          status: 'in_progress' // Auto-update status
-        });
+      // Update Parent (which updates Firestore)
+      onUpdateInquiry(selectedInquiry.id, {
+        replyHistory: updatedHistory,
+        status: 'in_progress'
+      });
 
-        // Update Local State
-        setInquiries(prev => prev.map(i => i.id === selectedInquiry.id ? {
-          ...i,
-          replyHistory: updatedHistory,
-          status: 'in_progress'
-        } : i));
+      setSelectedInquiry(prev => prev ? ({
+        ...prev,
+        replyHistory: updatedHistory,
+        status: 'in_progress'
+      }) : null);
 
-        setSelectedInquiry(prev => prev ? ({
-          ...prev,
-          replyHistory: updatedHistory,
-          status: 'in_progress'
-        }) : null);
-
-        setReplySubject('');
-        setReplyBody('');
-        setReplyCc('');
-        setSelectedTemplate('');
-        setIsPreview(false);
-      } catch (err) {
-        console.error(err);
-        toast({ title: "Database Error", description: "Email sent but failed to save history.", variant: "destructive" });
-      }
+      setReplySubject('');
+      setReplyBody('');
+      setReplyCc('');
+      setSelectedTemplate('');
+      setIsPreview(false);
     } else {
       toast({ title: "Error Sending Email", description: result.error, variant: "destructive" });
     }
@@ -247,18 +185,11 @@ const AdminInquiries = ({ onUpdateInquiry, onDelete }: AdminInquiriesProps) => {
 
   const handleNotesSave = async () => {
     if (!selectedInquiry) return;
-    try {
-      await updateDoc(doc(db, "inquiries", selectedInquiry.id), { notes: notesInput });
+    // Update Parent (which updates Firestore)
+    onUpdateInquiry(selectedInquiry.id, { notes: notesInput });
 
-      // Update local state
-      setInquiries(prev => prev.map(i => i.id === selectedInquiry.id ? { ...i, notes: notesInput } : i));
-      setSelectedInquiry(prev => prev ? ({ ...prev, notes: notesInput }) : null);
-
-      toast({ title: "Notes Saved", description: "Internal notes updated." });
-      onUpdateInquiry(selectedInquiry.id, { notes: notesInput });
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to save notes", variant: "destructive" });
-    }
+    setSelectedInquiry(prev => prev ? ({ ...prev, notes: notesInput }) : null);
+    toast({ title: "Notes Saved", description: "Internal notes updated." });
   };
 
 
