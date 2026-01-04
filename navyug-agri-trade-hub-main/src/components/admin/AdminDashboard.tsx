@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import AdminPipeline from './AdminPipeline';
+import React, { useState, useEffect, Suspense, lazy, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { db } from '@/lib/firebase';
@@ -18,10 +17,14 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import AdminHeader from './AdminHeader';
 import AdminNavigation from './AdminNavigation';
-import AdminOverview from './AdminOverview';
-import AdminInquiries from './AdminInquiries';
-import AdminProducts from './AdminProducts';
-import AdminBlogs from './AdminBlogs';
+
+// Lazy load components for performance
+const AdminOverview = lazy(() => import('./AdminOverview'));
+const AdminPipeline = lazy(() => import('./AdminPipeline'));
+const AdminInquiries = lazy(() => import('./AdminInquiries'));
+const AdminProducts = lazy(() => import('./AdminProducts'));
+const AdminBlogs = lazy(() => import('./AdminBlogs'));
+
 import { products as staticProducts } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, Loader2, X, Trash2 } from 'lucide-react';
@@ -692,17 +695,15 @@ const AdminDashboard = () => {
   // Stats are derived from state
   const [dateRange, setDateRange] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  const getFilteredInquiries = () => {
+  // Memoize filtered inquiries to prevent recalculation
+  const filteredInquiries = useMemo(() => {
     if (dateRange === 'all') return inquiries;
-
     const now = new Date();
     const startOfDay = new Date(now.setHours(0, 0, 0, 0));
 
     return inquiries.filter(inquiry => {
       const inquiryDate = new Date(inquiry.created_at);
-      if (dateRange === 'today') {
-        return inquiryDate >= startOfDay;
-      }
+      if (dateRange === 'today') return inquiryDate >= startOfDay;
       if (dateRange === 'week') {
         const weekAgo = new Date(now);
         weekAgo.setDate(now.getDate() - 7);
@@ -715,12 +716,10 @@ const AdminDashboard = () => {
       }
       return true;
     });
-  };
+  }, [inquiries, dateRange]);
 
-  // filteredInquiries contains ALL (including deleted) matching the date range
-  const filteredInquiries = getFilteredInquiries();
-  // activeInquiries contains ONLY VISIBLE (non-deleted) matching the date range
-  const activeInquiries = filteredInquiries.filter(i => !i.isDeleted);
+  // Memoize active inquiries
+  const activeInquiries = useMemo(() => filteredInquiries.filter(i => !i.isDeleted), [filteredInquiries]);
 
   const handleExportCSV = () => {
     const headers = ['ID', 'Name', 'Email', 'Phone', 'Product', 'Message', 'Status', 'Deal Value', 'Date', 'Notes'];
@@ -749,18 +748,18 @@ const AdminDashboard = () => {
   };
 
   // Stats are derived from filtered state
-  const stats = {
-    totalInquiries: filteredInquiries.length, // Show TOTAL traffic in the card (including deleted) as per user request
-    pendingInquiries: activeInquiries.filter(i => i.status === 'pending').length, // Only active pending
+  const stats = useMemo(() => ({
+    totalInquiries: filteredInquiries.length,
+    pendingInquiries: activeInquiries.filter(i => i.status === 'pending').length,
     totalProducts: products.length,
-    totalEarnings: activeInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0), // Only active earnings
+    totalEarnings: activeInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0),
     topProducts: filteredInquiries.reduce((acc: any, curr) => {
       const product = curr.product_interest || 'Unknown';
       acc[product] = (acc[product] || 0) + 1;
       return acc;
     }, {}),
     closedInquiries: activeInquiries.filter(i => i.status === 'closed' || i.status === 'closed_won').length,
-  };
+  }), [filteredInquiries, activeInquiries, products.length]);
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
 
@@ -803,88 +802,90 @@ const AdminDashboard = () => {
 
           </div>
 
-          {activeTab === 'overview' && (
-            <AdminOverview
-              stats={stats}
-              inquiries={filteredInquiries} // Pass ALL inquiries (including deleted) to graph
-              onInquiryClick={() => setActiveTab('inquiries')}
-              onProductClick={() => setActiveTab('products')}
-            />
-          )}
-
-          {activeTab === 'pipeline' && (
-            <div className="h-full">
-              <AdminPipeline
-                inquiries={activeInquiries}
-                onUpdateStatus={(id, status) => handleUpdateInquiry(id, { status })}
-                onUpdateLabels={handleUpdateLabels}
-                onDelete={handleDeleteInquiry}
-                onAddInquiry={startAddInquiry}
+          <Suspense fallback={<div className="h-full flex items-center justify-center min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-gray-400" /></div>}>
+            {activeTab === 'overview' && (
+              <AdminOverview
+                stats={stats}
+                inquiries={filteredInquiries} // Pass ALL inquiries (including deleted) to graph
+                onInquiryClick={() => setActiveTab('inquiries')}
+                onProductClick={() => setActiveTab('products')}
               />
-              <AddInquiryDialog
-                isOpen={isAddInquiryOpen}
-                onClose={() => setIsAddInquiryOpen(false)}
-                onSave={handleSaveNewInquiry}
-                initialStatus={initialInquiryStatus}
-              />
-            </div>
-          )}
+            )}
+
+            {activeTab === 'pipeline' && (
+              <div className="h-full">
+                <AdminPipeline
+                  inquiries={activeInquiries}
+                  onUpdateStatus={(id, status) => handleUpdateInquiry(id, { status })}
+                  onUpdateLabels={handleUpdateLabels}
+                  onDelete={handleDeleteInquiry}
+                  onAddInquiry={startAddInquiry}
+                />
+                <AddInquiryDialog
+                  isOpen={isAddInquiryOpen}
+                  onClose={() => setIsAddInquiryOpen(false)}
+                  onSave={handleSaveNewInquiry}
+                  initialStatus={initialInquiryStatus}
+                />
+              </div>
+            )}
 
 
-          {activeTab === 'inquiries' && (
-            <div className="relative z-10">
-              <AdminInquiries inquiries={activeInquiries} onUpdateInquiry={handleUpdateInquiry} onDelete={handleDeleteInquiry} />
-              {/* Pass only ACTIVE inquiries to list */}
-            </div>
-          )}
+            {activeTab === 'inquiries' && (
+              <div className="relative z-10">
+                <AdminInquiries inquiries={activeInquiries} onUpdateInquiry={handleUpdateInquiry} onDelete={handleDeleteInquiry} />
+                {/* Pass only ACTIVE inquiries to list */}
+              </div>
+            )}
 
-          {activeTab === 'products' && (
-            <div>
-              <AdminProducts
-                products={products}
-                onMove={handleMoveProduct}
-                onEdit={startEditProduct}
-                onDelete={handleDeleteProduct}
-                headerAction={
-                  <div className="flex gap-2">
-                    {products.length === 0 && (
-                      <Button variant="outline" onClick={handleSeedProducts} disabled={loading}>
-                        <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
+            {activeTab === 'products' && (
+              <div>
+                <AdminProducts
+                  products={products}
+                  onMove={handleMoveProduct}
+                  onEdit={startEditProduct}
+                  onDelete={handleDeleteProduct}
+                  headerAction={
+                    <div className="flex gap-2">
+                      {products.length === 0 && (
+                        <Button variant="outline" onClick={handleSeedProducts} disabled={loading}>
+                          <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
+                        </Button>
+                      )}
+                      <Button onClick={startAddProduct}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Product
                       </Button>
-                    )}
-                    <Button onClick={startAddProduct}>
-                      <Plus className="mr-2 h-4 w-4" /> Add Product
-                    </Button>
-                  </div>
-                }
-              />
+                    </div>
+                  }
+                />
 
-              <Dialog open={isAddProductOpen || isEditProductOpen} onOpenChange={(open) => {
-                if (!open) {
-                  setIsAddProductOpen(false);
-                  setIsEditProductOpen(false);
-                  setCurrentProduct({});
-                }
-              }}>
-                <ProductDialogForm
-                  title={isEditProductOpen ? "Edit Product" : "Add New Product"}
-                  currentProduct={currentProduct}
-                  setCurrentProduct={setCurrentProduct}
-                  handleSaveProduct={handleSaveProduct}
-                  saving={saving}
-                  onCancel={() => {
+                <Dialog open={isAddProductOpen || isEditProductOpen} onOpenChange={(open) => {
+                  if (!open) {
                     setIsAddProductOpen(false);
                     setIsEditProductOpen(false);
                     setCurrentProduct({});
-                  }}
-                  isEditMode={isEditProductOpen}
-                />
-              </Dialog>
+                  }
+                }}>
+                  <ProductDialogForm
+                    title={isEditProductOpen ? "Edit Product" : "Add New Product"}
+                    currentProduct={currentProduct}
+                    setCurrentProduct={setCurrentProduct}
+                    handleSaveProduct={handleSaveProduct}
+                    saving={saving}
+                    onCancel={() => {
+                      setIsAddProductOpen(false);
+                      setIsEditProductOpen(false);
+                      setCurrentProduct({});
+                    }}
+                    isEditMode={isEditProductOpen}
+                  />
+                </Dialog>
 
-            </div>
-          )}
+              </div>
+            )}
 
-          {activeTab === 'blogs' && <AdminBlogs />}
+            {activeTab === 'blogs' && <AdminBlogs />}
+          </Suspense>
         </div>
       </main>
     </div>
