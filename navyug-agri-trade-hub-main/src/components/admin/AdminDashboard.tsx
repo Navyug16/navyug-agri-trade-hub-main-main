@@ -849,29 +849,35 @@ const AdminDashboard = () => {
                         <Upload className="mr-2 h-4 w-4" /> Seed Initial Data
                       </Button>
                     )}
-                    <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-                      <DialogTrigger asChild>
-                        <Button onClick={startAddProduct}>
-                          <Plus className="mr-2 h-4 w-4" /> Add Product
-                        </Button>
-                      </DialogTrigger>
-                      <ProductDialogForm
-                        title="Add New Product"
-                        currentProduct={currentProduct}
-                        setCurrentProduct={setCurrentProduct}
-                        handleSaveProduct={handleSaveProduct}
-                        saving={saving}
-                        onCancel={() => {
-                          setIsAddProductOpen(false);
-                          setIsEditProductOpen(false);
-                          setCurrentProduct({});
-                        }}
-                        isEditMode={!!currentProduct.id && isEditProductOpen}
-                      />
-                    </Dialog>
+                    <Button onClick={startAddProduct}>
+                      <Plus className="mr-2 h-4 w-4" /> Add Product
+                    </Button>
                   </div>
                 }
               />
+
+              <Dialog open={isAddProductOpen || isEditProductOpen} onOpenChange={(open) => {
+                if (!open) {
+                  setIsAddProductOpen(false);
+                  setIsEditProductOpen(false);
+                  setCurrentProduct({});
+                }
+              }}>
+                <ProductDialogForm
+                  title={isEditProductOpen ? "Edit Product" : "Add New Product"}
+                  currentProduct={currentProduct}
+                  setCurrentProduct={setCurrentProduct}
+                  handleSaveProduct={handleSaveProduct}
+                  saving={saving}
+                  onCancel={() => {
+                    setIsAddProductOpen(false);
+                    setIsEditProductOpen(false);
+                    setCurrentProduct({});
+                  }}
+                  isEditMode={isEditProductOpen}
+                />
+              </Dialog>
+
             </div>
           )}
 
