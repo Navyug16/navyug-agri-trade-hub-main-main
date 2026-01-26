@@ -291,10 +291,10 @@ const Index = () => {
             </div>
           </RevealOnScroll>
 
-          <div className="flex flex-wrap justify-center gap-6 px-4">
+          <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-wrap md:justify-center gap-6 pb-8 md:pb-0 px-4 md:px-0 -mx-4 md:mx-0 scrollbar-hide md:overflow-visible">
             {products.slice(0, 4).map((product, index) => (
-              <RevealOnScroll key={product.id} delay={index * 100} className="flex-shrink-0">
-                <Card className="w-64 overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md h-full">
+              <RevealOnScroll key={product.id} delay={index * 100} className="flex-shrink-0 snap-center first:pl-4 last:pr-4 md:first:pl-0 md:last:pr-0">
+                <Card className="w-72 md:w-64 overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md h-full">
                   <div className="absolute top-3 right-3 z-10 bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded shadow-sm">
                     Premium Quality
                   </div>
@@ -332,7 +332,7 @@ const Index = () => {
             ))}
 
             {/* View All Circle */}
-            <RevealOnScroll delay={600} className="flex-shrink-0 flex items-center justify-center w-32 md:w-auto">
+            <RevealOnScroll delay={600} className="flex-shrink-0 flex items-center justify-center snap-center w-32 md:w-auto pr-4 md:pr-0">
               <div
                 onClick={() => navigate('/products')}
                 className="flex flex-col items-center gap-2 cursor-pointer group"
