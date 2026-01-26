@@ -66,17 +66,19 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
         acc[date] = {
           name: date,
           inquiries: 0,
+          wonInquiries: 0,
           value: 0,
           timestamp: dateObj.setHours(0, 0, 0, 0)
         };
       }
 
-      // We process ALL inquiries (even deleted ones) for historical trends if they are in the list.
-      // If the user wants to exclude "lost" from money, we can, but usually "dealValue" implies potential or won.
-      // Assuming 'value' is 'dealValue' regardless of status, or strictly 'closed_won'?
-      // The prompt says "Inquery budget", which usually exists even if pending.
-      acc[date].inquiries += 1;
-      acc[date].value += (curr.dealValue || 0);
+      acc[date].inquiries += 1; // Total Inquiries volume
+
+      // Only count value and count for WON deals
+      if (curr.status === 'closed_won') {
+        acc[date].value += (curr.dealValue || 0);
+        acc[date].wonInquiries += 1;
+      }
 
       return acc;
     }, {});
@@ -84,63 +86,29 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
     return Object.values(grouped).sort((a: any, b: any) => a.timestamp - b.timestamp);
   }, [inquiries]);
 
-  // 2. Status Distribution Data
-  const statusData = useMemo(() => {
-    if (!inquiries.length) return [];
-
-    const counts = inquiries.reduce((acc: any, curr: any) => {
-      let status;
-      if (curr.isDeleted) {
-        status = 'deleted';
-      } else {
-        const rawStatus = curr.status || 'pending';
-        if (['closed', 'closed_won', 'closed_lost'].includes(rawStatus)) {
-          status = 'done';
-        } else {
-          status = rawStatus;
-        }
-      }
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(counts).map(([name, value]) => ({
-      name: name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      value,
-      rawStatus: name
-    }));
-  }, [inquiries]);
-
-  // 3. Product Interest Data
-  const productInterestData = useMemo(() => {
-    if (!stats.topProducts) return [];
-    return Object.entries(stats.topProducts)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => (b.value as number) - (a.value as number))
-      .slice(0, 5); // Top 5
-  }, [stats.topProducts]);
-
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-4 border rounded-lg shadow-lg">
           <p className="font-bold text-gray-700 mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }} className="text-sm font-medium capitalize">
-              {entry.name.replace('_', ' ')}: {entry.value}
-            </p>
+            <div key={index} className="flex items-center gap-2 mb-1">
+              <div style={{ backgroundColor: entry.color, width: '8px', height: '8px', borderRadius: '50%' }}></div>
+              <span className="text-sm font-medium text-gray-600 capitalize">
+                {entry.name === 'value' ? 'Won Earnings' : entry.name}:
+                <span className="ml-1 font-bold text-gray-900">
+                  {entry.name === 'value' || entry.dataKey === 'value'
+                    ? `₹${entry.value.toLocaleString()}`
+                    : entry.value}
+                </span>
+              </span>
+            </div>
           ))}
         </div>
       );
     }
     return null;
   };
-
-  // Check if we should show Pie Chart
-  // "if any one inquery is pending or in progress then pia chart is show"
-  const showPieChart = useMemo(() => {
-    return inquiries.some(i => !i.isDeleted && (i.status === 'pending' || i.status === 'in_progress'));
-  }, [inquiries]);
 
   return (
     <div className="space-y-6 mb-8 h-full flex flex-col overflow-y-auto pr-2">
@@ -157,7 +125,7 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
             <div className="text-2xl font-bold text-gray-900">
               {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(stats.totalEarnings)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">+20.1% from last month</p>
+            <p className="text-xs text-muted-foreground mt-1">From closed won deals</p>
           </CardContent>
         </Card>
 
@@ -186,23 +154,21 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
             <p className="text-xs text-muted-foreground mt-1">Conversion rate: {inquiries.length > 0 ? ((stats.closedInquiries / inquiries.length) * 100).toFixed(1) : 0}%</p>
           </CardContent>
         </Card>
-
-
       </div>
 
-      {/* Main Analytics Section - Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Analytics Section - Full Width */}
+      <div className="grid grid-cols-1 gap-6">
 
-        {/* 1. Deals & Inquiry Trends */}
-        <Card className={`col-span-1 ${showPieChart ? 'lg:col-span-2' : 'lg:col-span-3'} shadow-md border-none bg-white`}>
+        {/* Deals & Inquiry Trends */}
+        <Card className="shadow-md border-none bg-white">
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Activity className="h-5 w-5 text-indigo-600" />
-              Inquiry & Budget Trends
+              Performance Overview
             </CardTitle>
-            <CardDescription>Daily deal value and inquiry volume</CardDescription>
+            <CardDescription>Daily inquiries vs. converted deals and revenue</CardDescription>
           </CardHeader>
-          <CardContent className="h-[400px]">
+          <CardContent className="h-[500px]">
             {trendData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={trendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -218,8 +184,13 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
 
-                  <Bar yAxisId="right" dataKey="inquiries" name="Inquiries" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30} fillOpacity={0.6} />
-                  <Line yAxisId="left" type="monotone" dataKey="value" name="Deal Value" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 8 }} />
+                  {/* Total Inquiries Bar */}
+                  <Bar yAxisId="right" dataKey="inquiries" name="Total Inquiries" fill="#cbd5e1" radius={[4, 4, 0, 0]} barSize={20} />
+
+                  {/* Won Inquiries Bar (Stacked or side-by-side? Side by side is clearer for volume comparison) */}
+                  <Bar yAxisId="right" dataKey="wonInquiries" name="Won Deals" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={20} />
+
+                  <Line yAxisId="left" type="monotone" dataKey="value" name="Won Revenue" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 8 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             ) : (
@@ -230,54 +201,7 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
             )}
           </CardContent>
         </Card>
-
-        {/* 2. Inquiry Status Distribution (Pie Chart) - Conditionally Rendered */}
-        {showPieChart && (
-          <Card className="col-span-1 shadow-md border-none bg-white">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <PieChartIcon className="h-5 w-5 text-indigo-600" />
-                Inquiry Status
-              </CardTitle>
-              <CardDescription>Current distribution of leads</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[400px]">
-              {statusData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={statusData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {statusData.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.rawStatus] || COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                  <PieChartIcon className="h-12 w-12 mb-3 opacity-20" />
-                  <p>No status data available</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-
-
       </div>
-
-
     </div>
   );
 };
