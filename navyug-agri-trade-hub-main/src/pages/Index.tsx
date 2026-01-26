@@ -291,21 +291,25 @@ const Index = () => {
             </div>
           </RevealOnScroll>
 
-          <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-wrap md:justify-center gap-6 pb-8 md:pb-0 px-4 md:px-0 -mx-4 md:mx-0 scrollbar-hide md:overflow-visible">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 mb-8">
             {products.slice(0, 4).map((product, index) => (
-              <RevealOnScroll key={product.id} delay={index * 100} className="flex-shrink-0 snap-center first:pl-4 last:pr-4 md:first:pl-0 md:last:pr-0">
-                <Card className="w-72 md:w-64 overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md h-full">
-                  <div className="absolute top-3 right-3 z-10 bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded shadow-sm">
-                    Premium Quality
+              <RevealOnScroll key={product.id} delay={index * 100}>
+                <Card className="w-full h-full overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md flex flex-col">
+                  {/* Badge */}
+                  <div className="absolute top-2 right-2 z-10 bg-amber-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded shadow-sm">
+                    Premium
                   </div>
-                  <div className="relative overflow-hidden h-48">
+
+                  {/* Image */}
+                  <div className="relative overflow-hidden h-36 md:h-48 flex-shrink-0">
                     <img
                       src={resolveImagePath(product.image)}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    {/* Desktop Overlay Button */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center">
                       <Button
                         onClick={() => navigate(`/product/${product.id}`)}
                         className="bg-white text-gray-900 hover:bg-amber-50"
@@ -314,36 +318,46 @@ const Index = () => {
                       </Button>
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="text-lg font-semibold mb-2 text-gray-900 group-hover:text-amber-600 transition-colors">{product.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+
+                  {/* Content */}
+                  <CardContent className="p-3 md:p-4 flex-1 flex flex-col">
+                    <h3 className="text-sm md:text-lg font-semibold mb-1 md:mb-2 text-gray-900 line-clamp-1 group-hover:text-amber-600 transition-colors">
+                      {product.name}
+                    </h3>
+                    <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4 line-clamp-2 hidden md:block">
                       {product.description}
                     </p>
-                    <Button
-                      onClick={() => navigate(`/product/${product.id}`)}
-                      className="w-full bg-amber-600 hover:bg-amber-700 text-white md:hidden"
-                    >
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      View Details
-                    </Button>
+
+                    {/* Mobile Only: Simple category or reduced text if needed? No, just spacing. */}
+
+                    <div className="mt-auto">
+                      <Button
+                        onClick={() => navigate(`/product/${product.id}`)}
+                        size="sm"
+                        className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm h-8 md:h-10"
+                      >
+                        <ShoppingCart className="mr-1.5 h-3 w-3 md:h-4 md:w-4" />
+                        Details
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </RevealOnScroll>
             ))}
-
-            {/* View All Circle */}
-            <RevealOnScroll delay={600} className="flex-shrink-0 flex items-center justify-center snap-center w-32 md:w-auto pr-4 md:pr-0">
-              <div
-                onClick={() => navigate('/products')}
-                className="flex flex-col items-center gap-2 cursor-pointer group"
-              >
-                <div className="w-16 h-16 rounded-full bg-amber-100 border-2 border-amber-300 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md group-hover:bg-amber-200">
-                  <ArrowRight className="h-6 w-6 text-amber-700" />
-                </div>
-                <span className="font-bold text-gray-700 text-sm group-hover:text-amber-700 whitespace-nowrap">View All</span>
-              </div>
-            </RevealOnScroll>
           </div>
+
+          <RevealOnScroll delay={400}>
+            <div className="text-center">
+              <Button
+                onClick={() => navigate('/products')}
+                variant="outline"
+                className="border-amber-600 text-amber-700 hover:bg-amber-50 rounded-full px-8 group"
+              >
+                View All Products
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
 
