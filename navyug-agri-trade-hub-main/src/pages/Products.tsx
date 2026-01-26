@@ -81,17 +81,21 @@ const Products = () => {
                 {loading ? (
                     <div className="flex justify-center py-20">Loading products...</div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
                         {filteredProducts.map((product) => (
                             <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group relative border-0 shadow-md h-full flex flex-col">
-                                <div className="relative overflow-hidden h-56">
+                                <div className="absolute top-2 right-2 z-10 bg-amber-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded shadow-sm">
+                                    Premium
+                                </div>
+
+                                <div className="relative overflow-hidden h-36 md:h-56 flex-shrink-0">
                                     <img
                                         src={resolveImagePath(product.image)}
                                         alt={product.name}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         loading="lazy"
                                     />
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center">
                                         <Button
                                             onClick={() => navigate(`/product/${product.id}`)}
                                             className="bg-white text-gray-900 hover:bg-amber-50"
@@ -100,21 +104,25 @@ const Products = () => {
                                         </Button>
                                     </div>
                                 </div>
-                                <CardContent className="p-6 flex-1 flex flex-col">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">{product.name}</h3>
-                                        <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-medium">{product.type}</span>
+
+                                <CardContent className="p-3 md:p-6 flex-1 flex flex-col">
+                                    <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-1 md:mb-2 gap-1">
+                                        <h3 className="text-sm md:text-xl font-semibold text-gray-900 line-clamp-1 group-hover:text-amber-600 transition-colors">{product.name}</h3>
+                                        <span className="bg-amber-100 text-amber-800 text-[10px] md:text-xs px-2 py-1 rounded-full font-medium w-fit">{product.type}</span>
                                     </div>
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1">
+                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1 hidden md:block">
                                         {product.description}
                                     </p>
-                                    <Button
-                                        onClick={() => navigate(`/product/${product.id}`)}
-                                        className="w-full bg-amber-600 hover:bg-amber-700 text-white mt-auto"
-                                    >
-                                        <ShoppingCart className="mr-2 h-4 w-4" />
-                                        View Details
-                                    </Button>
+                                    <div className="mt-auto md:mt-0">
+                                        <Button
+                                            onClick={() => navigate(`/product/${product.id}`)}
+                                            className="w-full bg-amber-600 hover:bg-amber-700 text-white h-8 text-xs md:h-10 md:text-sm"
+                                        >
+                                            <ShoppingCart className="mr-1.5 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
+                                            {/* Details text on mobile, View Details on desktop? Keep consistent. */}
+                                            View Details
+                                        </Button>
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))}
