@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
+
 
 import compression from 'vite-plugin-compression';
 
@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
     compression({ algorithm: 'gzip' }), // Compress assets
     compression({ algorithm: 'brotliCompress' }),
   ].filter(Boolean),

@@ -13,7 +13,7 @@ export function resolveImagePath(path: string | undefined): string {
   // Remove leading slash for processing
   let cleanPath = path.startsWith('/') ? path.substring(1) : path;
 
-  // Handle legacy lovable-uploads path
+  // Handle legacy upload paths
   if (cleanPath.startsWith('lovable-uploads/')) {
     cleanPath = cleanPath.replace('lovable-uploads/', '');
   }
