@@ -96,15 +96,6 @@ const ProductDetails = () => {
                                         {product.description}
                                     </p>
 
-                                    <Button
-                                        size="lg"
-                                        className="w-full bg-amber-600 hover:bg-amber-700 text-white text-lg py-6 shadow-lg shadow-amber-200"
-                                        onClick={handleInquire}
-                                    >
-                                        <ShoppingCart className="mr-2 h-6 w-6" />
-                                        Inquire Now
-                                    </Button>
-
                                     <div className="mt-8 border-t pt-2">
                                         <Accordion type="single" collapsible className="w-full">
                                             <AccordionItem value="description">
@@ -161,6 +152,17 @@ const ProductDetails = () => {
                                                 </AccordionContent>
                                             </AccordionItem>
                                         </Accordion>
+                                    </div>
+
+                                    <div className="mt-8">
+                                        <Button
+                                            size="lg"
+                                            className="w-full bg-amber-600 hover:bg-amber-700 text-white text-lg py-6 shadow-lg shadow-amber-200"
+                                            onClick={handleInquire}
+                                        >
+                                            <ShoppingCart className="mr-2 h-6 w-6" />
+                                            Inquire Now
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
