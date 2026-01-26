@@ -9,12 +9,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import InquiryDialog from '@/components/InquiryDialog';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -96,62 +90,60 @@ const ProductDetails = () => {
                                         {product.description}
                                     </p>
 
-                                    <div className="mt-8 border-t pt-2">
-                                        <Accordion type="single" collapsible className="w-full">
-                                            <AccordionItem value="description">
-                                                <AccordionTrigger>Detailed Description</AccordionTrigger>
-                                                <AccordionContent className="text-gray-600 leading-relaxed text-base">
-                                                    {product.longDescription || product.description}
-                                                </AccordionContent>
-                                            </AccordionItem>
+                                    <div className="mt-8 border-t pt-8 space-y-10">
 
-                                            <AccordionItem value="specifications">
-                                                <AccordionTrigger>Specifications</AccordionTrigger>
-                                                <AccordionContent>
-                                                    <div className="bg-gray-50 rounded-lg p-4">
-                                                        <div className="grid gap-3">
-                                                            {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
-                                                                <div key={key} className="flex justify-between border-b border-gray-200 pb-2 last:border-0 last:pb-0">
-                                                                    <span className="font-medium text-gray-600">{key}</span>
-                                                                    <span className="text-gray-900 font-semibold">{value as string}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </AccordionContent>
-                                            </AccordionItem>
+                                        {/* Detailed Description */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                                Detailed Description
+                                            </h3>
+                                            <p className="text-gray-600 leading-relaxed text-base">
+                                                {product.longDescription || product.description}
+                                            </p>
+                                        </div>
 
-                                            <AccordionItem value="features">
-                                                <AccordionTrigger>Features & Varieties</AccordionTrigger>
-                                                <AccordionContent>
-                                                    <div className="space-y-4">
-                                                        <div>
-                                                            <h4 className="font-semibold text-gray-900 mb-2">Key Features</h4>
-                                                            <ul className="space-y-2">
-                                                                {product.features?.map((feature: string, index: number) => (
-                                                                    <li key={index} className="flex items-start text-gray-600">
-                                                                        <Check className="h-4 w-4 text-amber-600 mr-2 mt-1 shrink-0" />
-                                                                        <span>{feature}</span>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
+                                        {/* Specifications */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-xl font-bold text-gray-900">Specifications</h3>
+                                            <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                                                <div className="grid gap-3">
+                                                    {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
+                                                        <div key={key} className="flex justify-between border-b border-gray-200 pb-2 last:border-0 last:pb-0">
+                                                            <span className="font-medium text-gray-600">{key}</span>
+                                                            <span className="text-gray-900 font-semibold text-right pl-4">{value as string}</span>
                                                         </div>
-                                                        {product.varieties && product.varieties.length > 0 && (
-                                                            <div>
-                                                                <h4 className="font-semibold text-gray-900 mb-2 mt-4">Available Varieties</h4>
-                                                                <div className="flex flex-wrap gap-2">
-                                                                    {product.varieties.map((variety: string, index: number) => (
-                                                                        <span key={index} className="px-3 py-1 bg-gray-100 text-gray-800 rounded-md text-sm border border-gray-200">
-                                                                            {variety}
-                                                                        </span>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Features & Varieties */}
+                                        <div className="space-y-6">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-gray-900 mb-4">Key Features</h3>
+                                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {product.features?.map((feature: string, index: number) => (
+                                                        <li key={index} className="flex items-start text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                                            <Check className="h-5 w-5 text-amber-600 mr-2 mt-0.5 shrink-0" />
+                                                            <span className="leading-snug">{feature}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            {product.varieties && product.varieties.length > 0 && (
+                                                <div>
+                                                    <h3 className="text-xl font-bold text-gray-900 mb-4">Available Varieties</h3>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {product.varieties.map((variety: string, index: number) => (
+                                                            <span key={index} className="px-4 py-2 bg-amber-50 text-amber-900 rounded-lg text-sm font-medium border border-amber-100">
+                                                                {variety}
+                                                            </span>
+                                                        ))}
                                                     </div>
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        </Accordion>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div className="mt-8">
