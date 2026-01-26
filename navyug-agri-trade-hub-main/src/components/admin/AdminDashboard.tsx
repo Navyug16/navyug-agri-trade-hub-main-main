@@ -759,7 +759,9 @@ const AdminDashboard = () => {
     totalInquiries: filteredInquiries.length,
     pendingInquiries: activeInquiries.filter(i => i.status === 'pending').length,
     totalProducts: products.length,
-    totalEarnings: activeInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0),
+    totalEarnings: activeInquiries
+      .filter(i => i.status === 'closed_won')
+      .reduce((sum, i) => sum + (i.dealValue || 0), 0),
     topProducts: filteredInquiries.reduce((acc: any, curr) => {
       const product = curr.product_interest || 'Unknown';
       acc[product] = (acc[product] || 0) + 1;
