@@ -301,22 +301,13 @@ const Index = () => {
                   </div>
 
                   {/* Image */}
-                  <div className="relative overflow-hidden h-36 md:h-48 flex-shrink-0">
+                  <div className="relative overflow-hidden h-36 md:h-48 flex-shrink-0 bg-gray-100">
                     <img
                       src={resolveImagePath(product.image)}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover transition-transform duration-500"
                       loading="lazy"
                     />
-                    {/* Desktop Overlay Button */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center">
-                      <Button
-                        onClick={() => navigate(`/product/${product.id}`)}
-                        className="bg-white text-gray-900 hover:bg-amber-50"
-                      >
-                        View Details
-                      </Button>
-                    </div>
                   </div>
 
                   {/* Content */}

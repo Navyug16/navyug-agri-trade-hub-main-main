@@ -88,21 +88,13 @@ const Products = () => {
                                     Premium
                                 </div>
 
-                                <div className="relative overflow-hidden h-36 md:h-56 flex-shrink-0">
+                                <div className="relative overflow-hidden h-36 md:h-56 flex-shrink-0 bg-gray-100">
                                     <img
                                         src={resolveImagePath(product.image)}
                                         alt={product.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        className="w-full h-full object-cover transition-transform duration-500"
                                         loading="lazy"
                                     />
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center">
-                                        <Button
-                                            onClick={() => navigate(`/product/${product.id}`)}
-                                            className="bg-white text-gray-900 hover:bg-amber-50"
-                                        >
-                                            View Details
-                                        </Button>
-                                    </div>
                                 </div>
 
                                 <CardContent className="p-3 md:p-6 flex-1 flex flex-col">
