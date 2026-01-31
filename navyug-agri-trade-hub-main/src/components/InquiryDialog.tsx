@@ -26,7 +26,7 @@ import {
 
 const COUNTRY_CODES = [
     { code: "+91", country: "IN" },
-    { code: "+1", country: "US" },
+    { code: "+1", country: "US/CA" },
     { code: "+44", country: "UK" },
     { code: "+971", country: "UAE" },
     { code: "+61", country: "AU" },
@@ -35,6 +35,16 @@ const COUNTRY_CODES = [
     { code: "+81", country: "JP" },
     { code: "+49", country: "DE" },
     { code: "+33", country: "FR" },
+    { code: "+39", country: "IT" },
+    { code: "+7", country: "RU" },
+    { code: "+34", country: "ES" },
+    { code: "+55", country: "BR" },
+    { code: "+966", country: "SA" },
+    { code: "+27", country: "ZA" },
+    { code: "+60", country: "MY" },
+    { code: "+62", country: "ID" },
+    { code: "+20", country: "EG" },
+    { code: "+90", country: "TR" },
 ];
 
 interface InquiryDialogProps {
@@ -159,12 +169,12 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
-                            <div className="flex gap-2">
+                            <div className="flex w-full border border-input rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent overflow-hidden">
                                 <Select
                                     value={formData.countryCode}
                                     onValueChange={handleCountryChange}
                                 >
-                                    <SelectTrigger className="w-[110px]">
+                                    <SelectTrigger className="w-[110px] h-10 border-0 rounded-none bg-transparent focus:ring-0 focus:ring-offset-0 border-r border-input">
                                         <SelectValue placeholder="Code" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -183,7 +193,7 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
                                     onChange={handleInputChange}
                                     placeholder="9876543210"
                                     pattern="[0-9]{5,15}"
-                                    className="flex-1"
+                                    className="flex-1 border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none h-10"
                                 />
                             </div>
                         </div>

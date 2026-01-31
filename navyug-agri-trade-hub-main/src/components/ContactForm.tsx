@@ -12,10 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
+// Comprehensive list of major country codes
 const COUNTRY_CODES = [
   { code: "+91", country: "IN" },
-  { code: "+1", country: "US" },
+  { code: "+1", country: "US/CA" },
   { code: "+44", country: "UK" },
   { code: "+971", country: "UAE" },
   { code: "+61", country: "AU" },
@@ -24,6 +26,16 @@ const COUNTRY_CODES = [
   { code: "+81", country: "JP" },
   { code: "+49", country: "DE" },
   { code: "+33", country: "FR" },
+  { code: "+39", country: "IT" },
+  { code: "+7", country: "RU" },
+  { code: "+34", country: "ES" },
+  { code: "+55", country: "BR" },
+  { code: "+966", country: "SA" },
+  { code: "+27", country: "ZA" },
+  { code: "+60", country: "MY" },
+  { code: "+62", country: "ID" },
+  { code: "+20", country: "EG" },
+  { code: "+90", country: "TR" },
 ];
 
 const ContactForm = () => {
@@ -154,12 +166,12 @@ const ContactForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-            <div className="flex gap-2">
+            <div className="flex w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-amber-500 focus-within:border-transparent overflow-hidden bg-white">
               <Select
                 value={formData.countryCode}
                 onValueChange={handleCountryChange}
               >
-                <SelectTrigger className="w-[124px] px-4 py-3 h-auto border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:ring-offset-0 bg-white">
+                <SelectTrigger className="w-[110px] px-3 py-3 h-auto border-0 rounded-none bg-transparent focus:ring-0 focus:ring-offset-0 border-r border-gray-200">
                   <SelectValue placeholder="Code" />
                 </SelectTrigger>
                 <SelectContent>
@@ -178,7 +190,7 @@ const ContactForm = () => {
                 required
                 pattern="[0-9]{5,15}"
                 title="Please enter a valid phone number (digits only)"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                className="flex-1 px-4 py-3 border-0 focus:ring-0 focus:outline-none"
                 placeholder="98765 43210"
               />
             </div>
