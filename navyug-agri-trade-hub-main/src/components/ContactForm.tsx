@@ -5,6 +5,13 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from "firebase/firestore";
 import { sendEmail } from "@/lib/emailService";
 import ThankYouPopup from './ThankYouPopup';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const COUNTRY_CODES = [
   { code: "+91", country: "IN" },
@@ -38,6 +45,10 @@ const ContactForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCountryChange = (value: string) => {
+    setFormData(prev => ({ ...prev, countryCode: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,18 +155,21 @@ const ContactForm = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
             <div className="flex gap-2">
-              <select
-                name="countryCode"
+              <Select
                 value={formData.countryCode}
-                onChange={handleInputChange}
-                className="w-24 px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-sm"
+                onValueChange={handleCountryChange}
               >
-                {COUNTRY_CODES.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.code} ({country.country})
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-[124px] px-4 py-3 h-auto border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:ring-offset-0 bg-white">
+                  <SelectValue placeholder="Code" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRY_CODES.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                      {country.code} ({country.country})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <input
                 type="tel"
                 name="phone"

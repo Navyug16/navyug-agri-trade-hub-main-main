@@ -16,6 +16,13 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import ThankYouPopup from './ThankYouPopup';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 const COUNTRY_CODES = [
     { code: "+91", country: "IN" },
@@ -66,9 +73,13 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
     }, [isOpen]);
 
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleCountryChange = (value: string) => {
+        setFormData(prev => ({ ...prev, countryCode: value }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -149,18 +160,21 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
                         <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
                             <div className="flex gap-2">
-                                <select
-                                    name="countryCode"
+                                <Select
                                     value={formData.countryCode}
-                                    onChange={handleInputChange}
-                                    className="w-20 px-1 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-sm"
+                                    onValueChange={handleCountryChange}
                                 >
-                                    {COUNTRY_CODES.map((country) => (
-                                        <option key={country.code} value={country.code}>
-                                            {country.code}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <SelectTrigger className="w-[110px]">
+                                        <SelectValue placeholder="Code" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {COUNTRY_CODES.map((country) => (
+                                            <SelectItem key={country.code} value={country.code}>
+                                                {country.code} ({country.country})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <Input
                                     id="phone"
                                     name="phone"
