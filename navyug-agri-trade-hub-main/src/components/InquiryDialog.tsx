@@ -174,7 +174,7 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
                                     value={formData.countryCode}
                                     onValueChange={handleCountryChange}
                                 >
-                                    <SelectTrigger className="w-[110px] h-10 border-0 rounded-none bg-transparent focus:ring-0 focus:ring-offset-0 border-r border-input">
+                                    <SelectTrigger className="w-[140px] h-10 border-0 rounded-none bg-transparent focus:ring-0 focus:ring-offset-0 border-r border-input">
                                         <SelectValue placeholder="Code" />
                                     </SelectTrigger>
                                     <SelectContent>

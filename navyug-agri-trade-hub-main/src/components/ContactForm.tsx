@@ -171,7 +171,7 @@ const ContactForm = () => {
                 value={formData.countryCode}
                 onValueChange={handleCountryChange}
               >
-                <SelectTrigger className="w-[110px] px-3 py-3 h-auto border-0 rounded-none bg-transparent focus:ring-0 focus:ring-offset-0 border-r border-gray-200">
+                <SelectTrigger className="w-[140px] px-3 py-3 h-auto border-0 rounded-none bg-transparent focus:ring-0 focus:ring-offset-0 border-r border-gray-200">
                   <SelectValue placeholder="Code" />
                 </SelectTrigger>
                 <SelectContent>
