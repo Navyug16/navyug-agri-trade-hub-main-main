@@ -18,14 +18,16 @@ import React, { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
-const RedirectHandler = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    // Redirect to home on reload unless it's the admin page
-    if (location.pathname !== '/' && !location.pathname.startsWith('/admin')) {
-      navigate('/', { replace: true });
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
     }
   }, []);
 
@@ -39,7 +41,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <RedirectHandler />
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
