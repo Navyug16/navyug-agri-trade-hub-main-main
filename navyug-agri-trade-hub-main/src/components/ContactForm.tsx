@@ -6,14 +6,29 @@ import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from "fi
 import { sendEmail } from "@/lib/emailService";
 import ThankYouPopup from './ThankYouPopup';
 
+const COUNTRY_CODES = [
+  { code: "+91", country: "IN" },
+  { code: "+1", country: "US" },
+  { code: "+44", country: "UK" },
+  { code: "+971", country: "UAE" },
+  { code: "+61", country: "AU" },
+  { code: "+65", country: "SG" },
+  { code: "+86", country: "CN" },
+  { code: "+81", country: "JP" },
+  { code: "+49", country: "DE" },
+  { code: "+33", country: "FR" },
+];
+
 const ContactForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    countryCode: '+91',
     subject: '', // This acts as "Product"
     quantity: '',
     message: ''
@@ -30,11 +45,13 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
+      const fullPhone = `${formData.countryCode} ${formData.phone}`;
+
       // Saving to Firestore in the requested structure
       await addDoc(collection(db, "inquiries"), {
         name: formData.name,
         email: formData.email,
-        phone: formData.phone,
+        phone: fullPhone,
         product_interest: formData.subject, // Keeping internal name consistent, but it is the "product"
         quantity: formData.quantity,
         message: formData.message,
@@ -46,8 +63,8 @@ const ContactForm = () => {
       // Show Thank You Popup immediately after saving to DB
       setShowThankYou(true);
 
-      const formSnapshot = { ...formData }; // Capture for email
-      setFormData({ name: '', email: '', phone: '', subject: '', quantity: '', message: '' });
+      const formSnapshot = { ...formData, phone: fullPhone }; // Capture for email
+      setFormData({ name: '', email: '', phone: '', countryCode: '+91', subject: '', quantity: '', message: '' });
 
       // Send Notification to Admin
       const adminEmail = 'navyugmgalani@gmail.com';
@@ -126,17 +143,31 @@ const ContactForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              required
-              pattern="[0-9]{10,}"
-              title="Please enter a valid phone number (digits only)"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              placeholder="+91 98765 43210"
-            />
+            <div className="flex gap-2">
+              <select
+                name="countryCode"
+                value={formData.countryCode}
+                onChange={handleInputChange}
+                className="w-24 px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-sm"
+              >
+                {COUNTRY_CODES.map((country) => (
+                  <option key={country.code} value={country.code}>
+                    {country.code} ({country.country})
+                  </option>
+                ))}
+              </select>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+                pattern="[0-9]{5,15}"
+                title="Please enter a valid phone number (digits only)"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                placeholder="98765 43210"
+              />
+            </div>
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-4">

@@ -17,6 +17,19 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import ThankYouPopup from './ThankYouPopup';
 
+const COUNTRY_CODES = [
+    { code: "+91", country: "IN" },
+    { code: "+1", country: "US" },
+    { code: "+44", country: "UK" },
+    { code: "+971", country: "UAE" },
+    { code: "+61", country: "AU" },
+    { code: "+65", country: "SG" },
+    { code: "+86", country: "CN" },
+    { code: "+81", country: "JP" },
+    { code: "+49", country: "DE" },
+    { code: "+33", country: "FR" },
+];
+
 interface InquiryDialogProps {
     isOpen: boolean;
     onClose: () => void;
@@ -31,6 +44,7 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
         name: '',
         email: '',
         phone: '',
+        countryCode: '+91',
         product: productName || '',
         message: ''
     });
@@ -45,11 +59,14 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
     useEffect(() => {
         if (isOpen) {
             setShowThankYou(false);
+            // Optional: Reset form fields? The user might want to persist if they accidentally closed.
+            // But usually reset is safer to avoid stale data.
+            // setFormData({ ... }) - keeping existing behavior for now, just resetting showThankYou
         }
     }, [isOpen]);
 
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -59,10 +76,12 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
         setIsSubmitting(true);
 
         try {
+            const fullPhone = `${formData.countryCode} ${formData.phone}`;
+
             await addDoc(collection(db, "inquiries"), {
                 name: formData.name,
                 email: formData.email,
-                phone: formData.phone,
+                phone: fullPhone,
                 product_interest: formData.product,
                 message: formData.message,
                 status: 'pending',
@@ -71,7 +90,7 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
 
             // Show Thank You Popup state instead of closing
             setShowThankYou(true);
-            setFormData({ name: '', email: '', phone: '', product: '', message: '' });
+            setFormData({ name: '', email: '', phone: '', countryCode: '+91', product: '', message: '' });
 
             // Optional: Backup toast
             // toast({ ... }); 
@@ -129,14 +148,30 @@ const InquiryDialog: React.FC<InquiryDialogProps> = ({ isOpen, onClose, productN
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
-                            <Input
-                                id="phone"
-                                name="phone"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                placeholder="+91 9876543210"
-                            />
+                            <div className="flex gap-2">
+                                <select
+                                    name="countryCode"
+                                    value={formData.countryCode}
+                                    onChange={handleInputChange}
+                                    className="w-20 px-1 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-sm"
+                                >
+                                    {COUNTRY_CODES.map((country) => (
+                                        <option key={country.code} value={country.code}>
+                                            {country.code}
+                                        </option>
+                                    ))}
+                                </select>
+                                <Input
+                                    id="phone"
+                                    name="phone"
+                                    type="tel"
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
+                                    placeholder="9876543210"
+                                    pattern="[0-9]{5,15}"
+                                    className="flex-1"
+                                />
+                            </div>
                         </div>
                     </div>
 
