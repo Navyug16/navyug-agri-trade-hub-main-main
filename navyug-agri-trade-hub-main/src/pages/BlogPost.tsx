@@ -34,7 +34,9 @@ const BlogPost = () => {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    setBlog({ id: docSnap.id, ...docSnap.data() } as Blog);
+                    const blogData = { id: docSnap.id, ...docSnap.data() } as Blog;
+                    setBlog(blogData);
+                    document.title = `${blogData.title} | Navyug Enterprise`;
                 } else {
                     console.log("No such document!");
                 }
@@ -48,6 +50,38 @@ const BlogPost = () => {
         fetchBlog();
     }, [id]);
 
+    useEffect(() => {
+        if (!blog) return;
+
+        // Update Title
+        document.title = `${blog.title} | Navyug Enterprise`;
+
+        // Helper to update or create meta tags
+        const updateMeta = (name: string, content: string, isProperty: boolean = false) => {
+            const attr = isProperty ? 'property' : 'name';
+            let element = document.querySelector(`meta[${attr}='${name}']`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute(attr, name);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', content);
+        };
+
+        // Update Meta Tags
+        const description = blog.excerpt || blog.content.substring(0, 150) + '...';
+        updateMeta('description', description);
+        updateMeta('og:title', blog.title, true);
+        updateMeta('og:description', description, true);
+        if (blog.image) {
+            updateMeta('og:image', blog.image, true);
+        }
+
+        // Cleanup (optional: reset to default on unmount, but often not necessary in this flow)
+        return () => {
+            document.title = 'Navyug Enterprise';
+        };
+    }, [blog]);
     const formatDate = (date: any) => {
         if (!date) return '';
         const d = date.toDate ? date.toDate() : new Date(date);
