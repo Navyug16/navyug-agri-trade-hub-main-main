@@ -10,6 +10,19 @@ const About = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        document.title = "Navyug Enterprise - A Legacy of Trust in Indian Agri-Trade";
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', "Learn about Navyug Enterprise's journey since 2003. Founded by Mr. Hareshbhai and Mr. Manojbhai Galani, we specialize in natural, farm-grown produce and ethical commission agency services in Rajkot, Gujarat.");
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = "description";
+            meta.content = "Learn about Navyug Enterprise's journey since 2003. Founded by Mr. Hareshbhai and Mr. Manojbhai Galani, we specialize in natural, farm-grown produce and ethical commission agency services in Rajkot, Gujarat.";
+            document.head.appendChild(meta);
+        }
+    }, []);
+
+    useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
@@ -20,9 +33,9 @@ const About = () => {
             {/* Hero Section for About Page */}
             <section className="bg-amber-50 py-16 md:py-24">
                 <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">About Our Company</h1>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                        Roots deeply planted in quality, trust, and tradition. We are dedicated to bringing the finest Indian agricultural produce to the world.
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">A Legacy of Trust in Indian Agri-Trade</h1>
+                    <p className="text-xl md:text-2xl text-amber-600 font-medium max-w-3xl mx-auto leading-relaxed">
+                        Built on Rural Values, Powered by Modern Technology.
                     </p>
                 </div>
             </section>

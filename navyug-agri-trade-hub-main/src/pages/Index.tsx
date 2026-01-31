@@ -83,6 +83,19 @@ const Index = () => {
 
 
   useEffect(() => {
+    document.title = "Navyug Enterprise - Premier Agricultural Commission Agent & Global Trade Hub";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', "Navyug Enterprise is a trusted APMC Commission Agent in Gujarat. We bridge the gap between hardworking farmers and global buyers with transparent trade in Groundnut, Cumin, Sesame, and 45+ agricultural commodities.");
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = "description";
+      meta.content = "Navyug Enterprise is a trusted APMC Commission Agent in Gujarat. We bridge the gap between hardworking farmers and global buyers with transparent trade in Groundnut, Cumin, Sesame, and 45+ agricultural commodities.";
+      document.head.appendChild(meta);
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -129,12 +142,14 @@ const Index = () => {
 
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-4xl mx-auto animate-in fade-in zoom-in duration-1000">
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
-              Premium Agricultural Products for
-              <span className="text-amber-400 block mt-2">Global Markets</span>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight tracking-tight">
+              Premier Agricultural Commission Agent & Global Trade Hub
+            </h1>
+            <h2 className="text-xl md:text-3xl text-amber-400 font-medium mb-6">
+              Connecting the Roots of Indian Agriculture to the Global Marketplace Since 2003.
             </h2>
-            <p className="text-xl md:text-2xl text-gray-200 mb-10 leading-relaxed max-w-2xl mx-auto">
-              Connecting global markets with premium Indian agricultural produce. Quality, Trust, and Excellence in every grain.
+            <p className="text-lg md:text-xl text-gray-200 mb-10 leading-relaxed max-w-2xl mx-auto hidden md:block">
+              Navyug Enterprise is a trusted APMC Commission Agent in Gujarat. We bridge the gap between hardworking farmers and global buyers with transparent trade in Groundnut, Cumin, Sesame, and 45+ agricultural commodities.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

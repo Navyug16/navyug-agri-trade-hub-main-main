@@ -16,6 +16,19 @@ const Products = () => {
     const [selectedCategory, setSelectedCategory] = useState("All");
 
     useEffect(() => {
+        document.title = "Navyug Enterprise - Export-Quality Indian Agricultural Commodities";
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', "Browse our extensive catalog of 45+ premium agricultural products. From Groundnuts and Cumin to Sesame and pulses, we ensure machine-cleaned, graded, and export-ready quality for global wholesalers.");
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = "description";
+            meta.content = "Browse our extensive catalog of 45+ premium agricultural products. From Groundnuts and Cumin to Sesame and pulses, we ensure machine-cleaned, graded, and export-ready quality for global wholesalers.";
+            document.head.appendChild(meta);
+        }
+    }, []);
+
+    useEffect(() => {
         window.scrollTo(0, 0);
         const fetchProducts = async () => {
             try {
@@ -56,9 +69,9 @@ const Products = () => {
 
             <main className="container mx-auto px-4 py-12">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">All Products</h1>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Explore our complete range of premium agricultural products.
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Export-Quality Indian Agricultural Commodities</h1>
+                    <p className="text-xl text-amber-600 font-medium max-w-3xl mx-auto">
+                        Sourcing the Finest Crops Directly from the Heart of Gujarat’s Mandis.
                     </p>
                 </div>
 

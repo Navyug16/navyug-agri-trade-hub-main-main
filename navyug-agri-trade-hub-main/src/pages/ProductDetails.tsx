@@ -37,6 +37,23 @@ const ProductDetails = () => {
         window.scrollTo(0, 0);
     }, [id]);
 
+    useEffect(() => {
+        if (product) {
+            document.title = `Premium ${product.name} – Export Quality & Bulk Supply | Navyug Enterprise`;
+            const metaDescription = document.querySelector('meta[name="description"]');
+            const descriptionContent = `Get the best wholesale rates for ${product.name} in India. Navyug Enterprise provides machine-cleaned, graded ${product.name} with guaranteed purity and moisture standards for international export and domestic markets.`;
+
+            if (metaDescription) {
+                metaDescription.setAttribute('content', descriptionContent);
+            } else {
+                const meta = document.createElement('meta');
+                meta.name = "description";
+                meta.content = descriptionContent;
+                document.head.appendChild(meta);
+            }
+        }
+    }, [product]);
+
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     }
@@ -79,11 +96,18 @@ const ProductDetails = () => {
 
                             <div className="p-8 md:p-12 flex flex-col justify-center">
                                 <div className="space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
-                                            {product.type}
-                                        </span>
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                                                Premium {product.name} – Export Quality & Bulk Supply
+                                            </h1>
+                                            <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium whitespace-nowrap self-start mt-1">
+                                                {product.type}
+                                            </span>
+                                        </div>
+                                        <p className="text-lg text-amber-600 font-medium">
+                                            High-Purity {product.name} Sourced Directly from APMC Auctions.
+                                        </p>
                                     </div>
 
                                     <p className="text-xl text-gray-600 leading-relaxed">

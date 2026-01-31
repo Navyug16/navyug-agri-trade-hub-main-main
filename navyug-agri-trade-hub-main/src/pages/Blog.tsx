@@ -58,6 +58,19 @@ const Blog = () => {
         return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
+    useEffect(() => {
+        document.title = "Navyug Enterprise - Mandi Pulse: Insights into Indian Agriculture & Market Trends";
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', "Stay updated with the latest market trends, daily Mandi Bhav (prices) from Gujarat APMCs, and expert tips on agricultural sourcing and tech-driven farming from Navyug Enterprise.");
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = "description";
+            meta.content = "Stay updated with the latest market trends, daily Mandi Bhav (prices) from Gujarat APMCs, and expert tips on agricultural sourcing and tech-driven farming from Navyug Enterprise.";
+            document.head.appendChild(meta);
+        }
+    }, []);
+
     return (
         <div className="min-h-screen bg-white">
             <Header />
@@ -65,9 +78,9 @@ const Blog = () => {
             {/* Hero Section */}
             <section className="bg-amber-50 py-16 md:py-24">
                 <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Latest Updates</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Mandi Pulse: Insights into Indian Agriculture & Market Trends</h1>
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                        Stay informed about agriculture trends, market insights, and company news.
+                        Expert Analysis, Daily Mandi Bhav, and Agri-Tech Innovations.
                     </p>
                 </div>
             </section>

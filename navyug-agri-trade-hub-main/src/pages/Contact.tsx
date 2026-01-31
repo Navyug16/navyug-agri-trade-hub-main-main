@@ -12,6 +12,19 @@ const Contact = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        document.title = "Navyug Enterprise - Partner with Navyug Enterprise Today";
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', "Contact Navyug Enterprise for bulk agricultural inquiries or farmer support. Visit us at our Rajkot APMC office or reach out online for transparent pricing and reliable supply chain solutions.");
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = "description";
+            meta.content = "Contact Navyug Enterprise for bulk agricultural inquiries or farmer support. Visit us at our Rajkot APMC office or reach out online for transparent pricing and reliable supply chain solutions.";
+            document.head.appendChild(meta);
+        }
+    }, []);
+
+    useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
@@ -21,9 +34,9 @@ const Contact = () => {
 
             <main className="container mx-auto px-4 py-12">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Partner with Navyug Enterprise Today</h1>
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Get in touch with us for any inquiries or collaborations. We are here to help.
+                        Whether you are a Farmer or a Global Importer, let’s grow together.
                     </p>
                 </div>
 
