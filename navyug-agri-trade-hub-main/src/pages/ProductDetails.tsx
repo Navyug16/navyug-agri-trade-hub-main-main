@@ -9,6 +9,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import InquiryDialog from '@/components/InquiryDialog';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import LazyImage from '@/components/ui/LazyImage';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -87,7 +88,7 @@ const ProductDetails = () => {
                     <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
                         <div className="grid md:grid-cols-2 gap-0">
                             <div className="relative h-96 md:h-full md:min-h-[600px] bg-white flex items-center justify-center border-r border-gray-100">
-                                <img
+                                <LazyImage
                                     src={resolveImagePath(product.image)}
                                     alt={product.name}
                                     className="w-full h-full object-cover"
