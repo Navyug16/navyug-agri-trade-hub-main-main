@@ -190,7 +190,7 @@ const ContactForm = () => {
                 required
                 pattern="[0-9]{5,15}"
                 title="Please enter a valid phone number (digits only)"
-                className="flex-1 px-4 py-3 border-0 focus:ring-0 focus:outline-none"
+                className="flex-1 px-4 py-3 border-0 focus:ring-0 focus:outline-none min-w-0"
                 placeholder="98765 43210"
               />
             </div>

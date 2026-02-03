@@ -11,13 +11,13 @@ const Footer = () => {
             <div className="container mx-auto px-4">
                 <div className="grid md:grid-cols-4 gap-8 mb-12">
                     <div className="col-span-1 md:col-span-1">
-                        <div className="flex items-center space-x-3 mb-6">
+                        <div className="flex items-center space-x-3 mb-6 flex-wrap">
                             <img
                                 src="/images/logo-new.jpg"
                                 alt="NAVYUG ENTERPRISE Logo"
                                 className="w-16 h-16 object-contain rounded-full"
                             />
-                            <h3 className="text-xl font-bold">NAVYUG ENTERPRISE</h3>
+                            <h3 className="text-xl font-bold break-words">NAVYUG ENTERPRISE</h3>
                         </div>
                         <p className="text-gray-400 leading-relaxed mb-6 text-sm">
                             Your trusted partner in agricultural product import and export, connecting global markets with premium Indian produce.

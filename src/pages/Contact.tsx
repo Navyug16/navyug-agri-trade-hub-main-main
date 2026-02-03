@@ -87,7 +87,7 @@ const Contact = () => {
                         </div>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-4 md:p-8">
                         <h3 className="text-2xl font-semibold mb-6 text-gray-900">Send us a Message</h3>
                         <ContactForm />
                     </Card>
