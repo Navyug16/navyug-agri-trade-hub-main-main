@@ -97,8 +97,16 @@
     @apply border-border;
   }
 
+  html {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
   }
 }
 
