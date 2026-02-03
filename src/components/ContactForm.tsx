@@ -159,14 +159,14 @@ const ContactForm = () => {
               value={formData.name}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              className="w-full max-w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="Your Name"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-            <div className="flex w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-amber-500 focus-within:border-transparent overflow-hidden bg-white">
+            <div className="flex w-full max-w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-amber-500 focus-within:border-transparent overflow-hidden bg-white">
               <Select
                 value={formData.countryCode}
                 onValueChange={handleCountryChange}
@@ -190,7 +190,7 @@ const ContactForm = () => {
                 required
                 pattern="[0-9]{5,15}"
                 title="Please enter a valid phone number (digits only)"
-                className="flex-1 px-4 py-3 border-0 focus:ring-0 focus:outline-none min-w-0"
+                className="flex-1 px-4 py-3 border-0 focus:ring-0 focus:outline-none min-w-0 w-full max-w-full"
                 placeholder="98765 43210"
               />
             </div>
@@ -205,7 +205,7 @@ const ContactForm = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              className="w-full max-w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="your@email.com"
             />
           </div>
@@ -219,7 +219,7 @@ const ContactForm = () => {
               onChange={handleInputChange}
               required
               min="1"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              className="w-full max-w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="e.g. 50"
             />
           </div>
@@ -232,7 +232,7 @@ const ContactForm = () => {
             value={formData.subject}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            className="w-full max-w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             placeholder="e.g. Groundnut Oil or General Inquiry"
           />
         </div>
@@ -244,7 +244,7 @@ const ContactForm = () => {
             onChange={handleInputChange}
             required
             rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            className="w-full max-w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             placeholder="Tell us about your requirements..."
           ></textarea>
         </div>
