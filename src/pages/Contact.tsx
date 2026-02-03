@@ -29,19 +29,19 @@ const Contact = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white w-full max-w-[100vw] overflow-x-hidden">
             <Header />
 
-            <main className="container mx-auto px-4 py-12">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4 break-words hyphens-auto">Partner with Navyug Enterprise Today</h1>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto px-4">
+            <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                <div className="text-center mb-10 md:mb-16">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 break-words hyphens-auto">Partner with Navyug Enterprise Today</h1>
+                    <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
                         Whether you are a Farmer or a Global Importer, let’s grow together.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-12 w-full max-w-full">
-                    <div className="w-full max-w-full">
+                <div className="grid md:grid-cols-2 gap-8 md:gap-12 w-full max-w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                         <h3 className="text-2xl font-semibold mb-6 text-gray-900">Contact Information</h3>
                         <div className="space-y-6">
                             <div className="flex items-center space-x-4">
@@ -87,7 +87,7 @@ const Contact = () => {
                         </div>
                     </div>
 
-                    <Card className="p-4 md:p-8 w-full max-w-full overflow-hidden">
+                    <Card className="p-3 md:p-8 w-full max-w-full overflow-hidden">
                         <h3 className="text-2xl font-semibold mb-6 text-gray-900">Send us a Message</h3>
                         <ContactForm />
                     </Card>
