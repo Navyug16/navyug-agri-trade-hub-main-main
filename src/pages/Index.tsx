@@ -23,19 +23,7 @@ const Index = () => {
   const [scrollY, setScrollY] = useState(0);
   const [products, setProducts] = useState<any[]>([]); // Using any for simplicity or reuse Product interface if exported
 
-  const [currentHeroImage, setCurrentHeroImage] = useState(0);
-  const heroImages = [
-    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2832&auto=format&fit=crop", // Field
-    "https://images.unsplash.com/photo-1567306301408-9b74779a11af?q=80&w=2626&auto=format&fit=crop", // Seeds / Agriculture close up
-    "https://images.unsplash.com/photo-1599940824399-b87987ced72a?q=80&w=2627&auto=format&fit=crop"  // Peanuts or similar
-  ];
 
-  /* useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []); */
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -123,22 +111,15 @@ const Index = () => {
 
       {/* Hero Section */}
       <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay and Parallax */}
-        {/* Background Image Slider with Overlay and Parallax */}
-        {heroImages.map((img, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${currentHeroImage === index ? 'opacity-100' : 'opacity-0'}`}
-            style={{ transform: `translateY(${scrollY * 0.5}px)` }}
-          >
-            <img
-              src={img}
-              alt="Agricultural Field"
-              className="w-full h-full object-cover scale-110"
-            />
-            <div className="absolute inset-0 bg-black/60"></div>
-          </div>
-        ))}
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2832&auto=format&fit=crop"
+            alt="Agricultural Field"
+            className="w-full h-full object-cover scale-110" // scale-110 kept for effect, or remove if static preference
+          />
+          <div className="absolute inset-0 bg-black/60"></div>
+        </div>
 
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-4xl mx-auto animate-in fade-in zoom-in duration-1000">
