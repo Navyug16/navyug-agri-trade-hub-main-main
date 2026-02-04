@@ -56,7 +56,7 @@ const App = () => (
               <Route path="/products" element={<Products />} />
               <Route path="/contact" element={<Contact />} />
               {/* TestAdmin route removed */}
-              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/*" element={<AdminPage />} />
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<BlogPost />} />
