@@ -6,21 +6,23 @@ const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = React.useState(true);
-    const [lastScrollY, setLastScrollY] = React.useState(0);
+    const lastScrollY = React.useRef(0);
 
     const isActive = (path: string) => location.pathname === path;
 
     React.useEffect(() => {
         const controlNavbar = () => {
             if (typeof window !== 'undefined') {
-                if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                const currentScrollY = window.scrollY;
+
+                if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
                     // if scroll down hide the navbar
                     setIsVisible(false);
                 } else {
-                    // if scroll up show the navbar
+                    // if scroll up or at top show the navbar
                     setIsVisible(true);
                 }
-                setLastScrollY(window.scrollY);
+                lastScrollY.current = currentScrollY;
             }
         };
 
@@ -29,7 +31,7 @@ const Header = () => {
         return () => {
             window.removeEventListener('scroll', controlNavbar);
         };
-    }, [lastScrollY]);
+    }, []);
 
     return (
         <>
