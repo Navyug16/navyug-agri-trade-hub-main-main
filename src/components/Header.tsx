@@ -5,8 +5,31 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [isVisible, setIsVisible] = React.useState(true);
+    const [lastScrollY, setLastScrollY] = React.useState(0);
 
     const isActive = (path: string) => location.pathname === path;
+
+    React.useEffect(() => {
+        const controlNavbar = () => {
+            if (typeof window !== 'undefined') {
+                if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                    // if scroll down hide the navbar
+                    setIsVisible(false);
+                } else {
+                    // if scroll up show the navbar
+                    setIsVisible(true);
+                }
+                setLastScrollY(window.scrollY);
+            }
+        };
+
+        window.addEventListener('scroll', controlNavbar);
+
+        return () => {
+            window.removeEventListener('scroll', controlNavbar);
+        };
+    }, [lastScrollY]);
 
     return (
         <>
@@ -27,7 +50,7 @@ const Header = () => {
             </div>
 
             {/* Header */}
-            <header className="bg-white shadow-sm sticky top-0 z-50 animate-in slide-in-from-top duration-700 delay-100 fill-mode-backwards">
+            <header className={`bg-white shadow-sm sticky top-0 z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
