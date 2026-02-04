@@ -5,38 +5,43 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [isSticky, setIsSticky] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(true);
     const lastScrollY = React.useRef(0);
 
     const isActive = (path: string) => location.pathname === path;
 
     React.useEffect(() => {
-        const controlNavbar = () => {
+        const handleScroll = () => {
             if (typeof window !== 'undefined') {
                 const currentScrollY = window.scrollY;
 
-                if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-                    // if scroll down hide the navbar
+                // Toggle Sticky Mode based on scroll position (e.g., passed top bar)
+                setIsSticky(currentScrollY > 40);
+
+                // Smart Hide/Show Logic
+                if (currentScrollY < 10) {
+                    setIsVisible(true);
+                } else if (currentScrollY > lastScrollY.current) {
+                    // Scrolling DOWN
                     setIsVisible(false);
                 } else {
-                    // if scroll up or at top show the navbar
+                    // Scrolling UP
                     setIsVisible(true);
                 }
+
                 lastScrollY.current = currentScrollY;
             }
         };
 
-        window.addEventListener('scroll', controlNavbar);
-
-        return () => {
-            window.removeEventListener('scroll', controlNavbar);
-        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
         <>
-            {/* Top Bar */}
-            <div className="bg-gray-900 text-white py-2 text-sm animate-in slide-in-from-top duration-500">
+            {/* Top Bar - Stays static */}
+            <div className="bg-gray-900 text-white py-2 text-sm z-50 relative">
                 <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
                     <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-center">
                         <span>GST: <span className="font-semibold text-amber-400 whitespace-nowrap">24ABCDE1234F1Z5</span></span>
@@ -51,8 +56,15 @@ const Header = () => {
                 </div>
             </div>
 
-            {/* Header */}
-            <header className={`bg-white shadow-sm sticky top-0 z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+            {/* Header - Becomes fixed when sticky */}
+            {isSticky && <div className="h-24 w-full"></div>}
+
+            <header
+                className={`bg-white shadow-sm transition-all duration-300 z-[100] w-full h-24
+                    ${isSticky ? 'fixed top-0 left-0' : 'relative'} 
+                    ${isSticky && !isVisible ? '-translate-y-full' : 'translate-y-0'}
+                `}
+            >
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
