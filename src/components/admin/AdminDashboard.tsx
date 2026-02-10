@@ -797,30 +797,37 @@ const AdminDashboard = () => {
       <main className="flex-1 overflow-auto relative w-full">
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between p-4 bg-gray-900 text-white shadow-md sticky top-0 z-20">
-          <div className="flex items-center gap-2">
-            <div className="bg-amber-500/20 p-1 rounded">
-              <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+          <div className="flex items-center gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-gray-800 -ml-2">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 border-r-gray-800 bg-gray-900 w-64">
+                <AdminNavigation
+                  activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline'}
+                  onTabChange={setActiveTab}
+                  pendingInquiries={stats.pendingInquiries}
+                  onLogout={logout}
+                  adminName={admin?.name}
+                  className="w-full h-full border-none shadow-none"
+                />
+              </SheetContent>
+            </Sheet>
+
+            <div className="flex items-center gap-2">
+              <div className="bg-amber-500/20 p-1 rounded">
+                <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </div>
+              <span className="font-bold text-amber-500">NAVYUG</span>
             </div>
-            <span className="font-bold text-amber-500">NAVYUG</span>
           </div>
 
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-800">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 border-r-gray-800 bg-gray-900 w-64">
-              <AdminNavigation
-                activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline'}
-                onTabChange={setActiveTab}
-                pendingInquiries={stats.pendingInquiries}
-                onLogout={logout}
-                adminName={admin?.name}
-                className="w-full h-full border-none shadow-none"
-              />
-            </SheetContent>
-          </Sheet>
+          {/* User Name on Top Right */}
+          <div className="text-xs text-gray-400 font-medium">
+            {admin?.name || 'Admin'}
+          </div>
         </div>
 
         <div className="p-4 md:p-8 space-y-6">
