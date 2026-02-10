@@ -198,7 +198,7 @@ const AdminBlogs = () => {
                         <DialogDescription>Add your thoughts and updates here.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSave} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="title">Title</Label>
                                 <Input

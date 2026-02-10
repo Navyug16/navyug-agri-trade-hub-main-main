@@ -41,6 +41,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 interface Inquiry {
   id: string;
@@ -213,7 +219,7 @@ const ProductDialogForm = ({
       <form onSubmit={handleSaveProduct} className="space-y-6">
 
         {/* Basic Info */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="id">Product ID (Slug)</Label>
             <Input
@@ -252,7 +258,7 @@ const ProductDialogForm = ({
         {/* Image Upload */}
         <div className="space-y-2">
           <Label>Product Images (First one is cover)</Label>
-          <div className="grid grid-cols-4 gap-4 mb-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-2">
             {currentProduct.images && currentProduct.images.length > 0 ? (
               currentProduct.images.map((img, idx) => (
                 <div key={idx} className="relative group aspect-square">
@@ -354,7 +360,7 @@ const ProductDialogForm = ({
             />
             <Button type="button" onClick={addFeature} size="icon"><Plus className="h-4 w-4" /></Button>
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             {currentProduct.features?.map((f, i) => (
               <div key={i} className="flex items-center justify-between bg-white border px-3 py-2 rounded text-sm">
                 <span>{f}</span>
@@ -367,7 +373,7 @@ const ProductDialogForm = ({
         {/* Specifications Section */}
         <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
           <Label className="text-base font-semibold">Specifications</Label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               placeholder="Key (e.g. Purity)"
               value={newSpecKey}
@@ -770,29 +776,61 @@ const AdminDashboard = () => {
     closedInquiries: activeInquiries.filter(i => i.status === 'closed' || i.status === 'closed_won').length,
   }), [filteredInquiries, activeInquiries, products.length]);
 
+
+
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
-      {/* Sidebar Navigation */}
-      <AdminNavigation
-        activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline'}
-        onTabChange={setActiveTab}
-        pendingInquiries={stats.pendingInquiries}
-        onLogout={logout}
-        adminName={admin?.name}
-      />
+      {/* Desktop Sidebar Navigation */}
+      <div className="hidden md:flex">
+        <AdminNavigation
+          activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline'}
+          onTabChange={setActiveTab}
+          pendingInquiries={stats.pendingInquiries}
+          onLogout={logout}
+          adminName={admin?.name}
+        />
+      </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto relative">
-        <div className="p-8">
+      <main className="flex-1 overflow-auto relative w-full">
+        {/* Mobile Header */}
+        <div className="md:hidden flex items-center justify-between p-4 bg-gray-900 text-white shadow-md sticky top-0 z-20">
+          <div className="flex items-center gap-2">
+            <div className="bg-amber-500/20 p-1 rounded">
+              <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+            </div>
+            <span className="font-bold text-amber-500">NAVYUG</span>
+          </div>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-800">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 border-r-gray-800 bg-gray-900 w-64">
+              <AdminNavigation
+                activeTab={activeTab as 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline'}
+                onTabChange={setActiveTab}
+                pendingInquiries={stats.pendingInquiries}
+                onLogout={logout}
+                adminName={admin?.name}
+                className="w-full h-full border-none shadow-none"
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        <div className="p-4 md:p-8 space-y-6">
           {/* Header for content area */}
-          <div className="flex justify-between items-center mb-6">
-            {activeTab === 'inquiries' ? <div></div> : <h1 className="text-3xl font-bold text-gray-800 capitalize">{activeTab.replace('_', ' ')}</h1>}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            {activeTab === 'inquiries' ? <div></div> : <h1 className="text-2xl md:text-3xl font-bold text-gray-800 capitalize">{activeTab.replace('_', ' ')}</h1>}
 
             {/* Global Date Filter (Visible on Overview/Inquiries) */}
             {(activeTab === 'overview' || activeTab === 'inquiries') && (
-              <div className="flex bg-white rounded-lg border p-1 gap-1 shadow-sm">
+              <div className="flex bg-white rounded-lg border p-1 gap-1 shadow-sm overflow-x-auto max-w-full">
                 {(['all', 'month', 'week', 'today'] as const).map(range => (
                   <Button
                     key={range}

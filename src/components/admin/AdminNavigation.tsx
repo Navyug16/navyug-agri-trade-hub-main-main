@@ -2,6 +2,12 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Mail, Package, LogOut, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 
 interface AdminNavigationProps {
   activeTab: 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline';
@@ -9,29 +15,43 @@ interface AdminNavigationProps {
   pendingInquiries: number;
   onLogout: () => void;
   adminName?: string;
+  className?: string;
+  onClose?: () => void;
 }
 
-const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, adminName }: AdminNavigationProps) => {
+const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, adminName, className, onClose }: AdminNavigationProps) => {
+  const handleTabClick = (tab: 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline') => {
+    onTabChange(tab);
+    if (onClose) onClose();
+  };
+
   return (
-    <div className="w-64 bg-gray-900 text-white h-screen flex flex-col shadow-2xl shrink-0">
-      <div className="p-6 border-b border-gray-800">
-        <h1 className="text-xl font-bold tracking-wider text-amber-500">NAVYUG ENTERPRISE</h1>
-        <p className="text-xs text-gray-500 mt-1">Logged in as {adminName || 'Admin'}</p>
+    <div className={cn("w-64 bg-gray-900 text-white h-full flex flex-col shadow-2xl shrink-0", className)}>
+      <div className="p-6 border-b border-gray-800 flex items-center gap-3">
+        <div className="bg-amber-500/20 p-2 rounded-lg">
+          <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+          <TrendingUp className="h-6 w-6 text-amber-500" style={{ display: 'none' }} />
+        </div>
+        <div>
+          <h1 className="text-lg font-bold tracking-wider text-amber-500 leading-none">NAVYUG</h1>
+          <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest">Enterprise Admin</p>
+        </div>
       </div>
 
-      <div className="flex-1 py-6 px-3 space-y-2">
+      <div className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Main Menu</p>
         <Button
           variant="ghost"
-          className={`w-full justify-start text-base h-12 ${activeTab === 'overview' ? 'bg-gray-800 text-white font-semibold border-l-4 border-amber-500 rounded-l-none pl-2' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
-          onClick={() => onTabChange('overview')}
+          className={cn("w-full justify-start text-base h-11 transition-all", activeTab === 'overview' ? 'bg-gray-800 text-white font-medium pl-4 border-l-4 border-amber-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50')}
+          onClick={() => handleTabClick('overview')}
         >
           <TrendingUp className="h-5 w-5 mr-3" />
           Dashboard
         </Button>
         <Button
           variant="ghost"
-          className={`w-full justify-start text-base h-12 ${activeTab === 'pipeline' ? 'bg-gray-800 text-white font-semibold border-l-4 border-amber-500 rounded-l-none pl-2' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
-          onClick={() => onTabChange('pipeline')}
+          className={cn("w-full justify-start text-base h-11 transition-all", activeTab === 'pipeline' ? 'bg-gray-800 text-white font-medium pl-4 border-l-4 border-amber-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50')}
+          onClick={() => handleTabClick('pipeline')}
         >
           <div className="mr-3 h-5 w-5 flex items-center justify-center">
             <svg
@@ -53,48 +73,61 @@ const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, a
           </div>
           Pipeline
         </Button>
+
+        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-6">Management</p>
         <Button
           variant="ghost"
-          className={`w-full justify-start text-base h-12 ${activeTab === 'inquiries' ? 'bg-gray-800 text-white font-semibold border-l-4 border-amber-500 rounded-l-none pl-2' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
-          onClick={() => onTabChange('inquiries')}
+          className={cn("w-full justify-start text-base h-11 transition-all", activeTab === 'inquiries' ? 'bg-gray-800 text-white font-medium pl-4 border-l-4 border-amber-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50')}
+          onClick={() => handleTabClick('inquiries')}
         >
           <Mail className="h-5 w-5 mr-3" />
           Inquiries
           {pendingInquiries > 0 && (
-            <span className="ml-auto bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">
+            <span className="ml-auto bg-amber-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
               {pendingInquiries}
             </span>
           )}
         </Button>
         <Button
           variant="ghost"
-          className={`w-full justify-start text-base h-12 ${activeTab === 'products' ? 'bg-gray-800 text-white font-semibold border-l-4 border-amber-500 rounded-l-none pl-2' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
-          onClick={() => onTabChange('products')}
+          className={cn("w-full justify-start text-base h-11 transition-all", activeTab === 'products' ? 'bg-gray-800 text-white font-medium pl-4 border-l-4 border-amber-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50')}
+          onClick={() => handleTabClick('products')}
         >
           <Package className="h-5 w-5 mr-3" />
           Products
         </Button>
         <Button
           variant="ghost"
-          className={`w-full justify-start text-base h-12 ${activeTab === 'blogs' ? 'bg-gray-800 text-white font-semibold border-l-4 border-amber-500 rounded-l-none pl-2' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
-          onClick={() => onTabChange('blogs')}
+          className={cn("w-full justify-start text-base h-11 transition-all", activeTab === 'blogs' ? 'bg-gray-800 text-white font-medium pl-4 border-l-4 border-amber-500' : 'text-gray-400 hover:text-white hover:bg-gray-800/50')}
+          onClick={() => handleTabClick('blogs')}
         >
           <BookOpen className="h-5 w-5 mr-3" />
           Blogs
         </Button>
       </div>
 
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+        <div className="flex items-center gap-3 mb-4 px-2">
+          <Avatar className="h-9 w-9 border border-gray-700">
+            <AvatarImage src={`https://ui-avatars.com/api/?name=${adminName || 'Admin'}&background=amber&color=fff`} />
+            <AvatarFallback>AD</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white truncate">{adminName || 'Admin'}</p>
+            <p className="text-xs text-gray-500 truncate">admin@navyug.com</p>
+          </div>
+        </div>
         <Link to="/">
-          <Button variant="outline" className="w-full mb-2 bg-transparent text-gray-400 border-gray-700 hover:text-white hover:border-gray-500">
+          <Button variant="outline" className="w-full mb-2 bg-gray-800 text-gray-400 border-gray-700 hover:text-white hover:bg-gray-700 transition-colors h-9 text-xs">
             Visit Website
           </Button>
         </Link>
-        <Button onClick={onLogout} variant="destructive" className="w-full bg-red-900/50 hover:bg-red-900 border border-red-900 text-red-100">
-          <LogOut className="h-4 w-4 mr-2" />
+        <Button onClick={onLogout} variant="destructive" className="w-full bg-red-900/20 hover:bg-red-900/40 border border-red-900/50 text-red-200 hover:text-red-100 transition-colors h-9 text-xs">
+          <LogOut className="h-3 w-3 mr-2" />
           Logout
         </Button>
       </div>
+      {/* Mobile close button if needed, although Sheet handles it */}
     </div>
   );
 };

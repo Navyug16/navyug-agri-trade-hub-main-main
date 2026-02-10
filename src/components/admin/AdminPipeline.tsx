@@ -78,9 +78,9 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
     };
 
     return (
-        <div className="h-full overflow-hidden pb-4">
+        <div className="h-full overflow-x-auto pb-4">
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex gap-2 w-full h-full">
+                <div className="flex gap-4 w-full h-full min-w-max p-1">
                     {COLUMNS.map(column => {
                         const columnInquiries = inquiries.filter(i => {
                             if (column.id === 'closed_won' || column.id === 'closed_lost') return i.status === column.id;
@@ -92,7 +92,7 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
                         const totalValue = columnInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0);
 
                         return (
-                            <div key={column.id} className="flex-1 min-w-0 flex flex-col bg-gray-50/50 rounded-xl border h-full max-h-[calc(100vh-200px)]">
+                            <div key={column.id} className="w-80 flex-shrink-0 flex flex-col bg-gray-50/50 rounded-xl border h-full max-h-[calc(100vh-200px)]">
                                 {/* Column Header */}
                                 <div className={`p-4 rounded-t-xl border-b flex justify-between items-start ${column.color}`}>
                                     <div className="min-w-0 overflow-hidden">
