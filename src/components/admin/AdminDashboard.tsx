@@ -825,7 +825,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* User Name on Top Right */}
-          <div className="text-xs text-gray-400 font-medium">
+          <div className="text-sm font-semibold text-white">
             {admin?.name || 'Admin'}
           </div>
         </div>

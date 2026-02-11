@@ -113,45 +113,51 @@ const AdminOverview = ({ stats, inquiries = [], onInquiryClick, onProductClick }
   return (
     <div className="space-y-6 mb-8 h-full flex flex-col overflow-y-auto pr-2">
       {/* Key Metrics Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
+      {/* Key Metrics Strip */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 shrink-0">
         <Card className="border-l-4 border-l-emerald-600 shadow-sm bg-white/80 backdrop-blur hover:shadow-md transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Earnings</CardTitle>
-            <div className="p-2 bg-emerald-100 rounded-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-500 truncate">Earnings</CardTitle>
+            <div className="hidden sm:block p-2 bg-emerald-100 rounded-full">
               <DollarSign className="h-4 w-4 text-emerald-600" />
             </div>
+            <DollarSign className="h-3 w-3 text-emerald-600 sm:hidden" />
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-            <div className="text-2xl font-bold text-gray-900">
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
               {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(stats.totalEarnings)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">From closed won deals</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 truncate">Total Revenue</p>
           </CardContent>
         </Card>
 
         <Card className="border-l-4 border-l-orange-500 shadow-sm bg-white/80 backdrop-blur cursor-pointer hover:shadow-md transition-all duration-300" onClick={onInquiryClick}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
-            <CardTitle className="text-sm font-medium text-gray-500">Pending Inquiries</CardTitle>
-            <div className="p-2 bg-orange-100 rounded-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-500 truncate">Pending</CardTitle>
+            <div className="hidden sm:block p-2 bg-orange-100 rounded-full">
               <Users className="h-4 w-4 text-orange-500" />
             </div>
+            <Users className="h-3 w-3 text-orange-500 sm:hidden" />
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-            <div className="text-2xl font-bold text-gray-900">{stats.pendingInquiries}</div>
-            <p className="text-xs text-muted-foreground mt-1">Requires attention</p>
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-lg sm:text-2xl font-bold text-gray-900">{stats.pendingInquiries}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 truncate">Inquiries</p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-blue-500 shadow-sm bg-white/80 backdrop-blur hover:shadow-md transition-all duration-300 sm:col-span-2 lg:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
-            <CardTitle className="text-sm font-medium text-gray-500">Closed Deals</CardTitle>
-            <div className="p-2 bg-blue-100 rounded-full">
+        <Card className="border-l-4 border-l-blue-500 shadow-sm bg-white/80 backdrop-blur hover:shadow-md transition-all duration-300 col-span-2 md:col-span-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-500 truncate">Closed</CardTitle>
+            <div className="hidden sm:block p-2 bg-blue-100 rounded-full">
               <TrendingUp className="h-4 w-4 text-blue-500" />
             </div>
+            <TrendingUp className="h-3 w-3 text-blue-500 sm:hidden" />
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-            <div className="text-2xl font-bold text-gray-900">{stats.closedInquiries}</div>
-            <p className="text-xs text-muted-foreground mt-1">Conversion rate: {inquiries.length > 0 ? ((stats.closedInquiries / inquiries.length) * 100).toFixed(1) : 0}%</p>
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-lg sm:text-2xl font-bold text-gray-900">{stats.closedInquiries}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 truncate">
+              Rate: {inquiries.length > 0 ? ((stats.closedInquiries / inquiries.length) * 100).toFixed(0) : 0}%
+            </p>
           </CardContent>
         </Card>
       </div>
