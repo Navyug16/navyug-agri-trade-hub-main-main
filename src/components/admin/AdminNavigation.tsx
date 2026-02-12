@@ -29,7 +29,7 @@ const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, a
     <div className={cn("w-64 bg-gray-900 text-white h-full flex flex-col shadow-2xl shrink-0", className)}>
       <div className="p-6 border-b border-gray-800 flex items-center gap-3">
         <div className="bg-amber-500/20 p-2 rounded-lg">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+          <img src="/favicon.ico" alt="Logo" className="h-8 w-8 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
           <TrendingUp className="h-6 w-6 text-amber-500" style={{ display: 'none' }} />
         </div>
         <div>

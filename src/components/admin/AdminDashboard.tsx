@@ -818,7 +818,7 @@ const AdminDashboard = () => {
 
             <div className="flex items-center gap-2">
               <div className="bg-amber-500/20 p-1 rounded">
-                <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <img src="/favicon.ico" alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
               </div>
               <span className="font-bold text-amber-500">NAVYUG ENTERPRISE</span>
             </div>
