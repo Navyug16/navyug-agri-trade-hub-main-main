@@ -92,9 +92,9 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
                         const totalValue = columnInquiries.reduce((sum, i) => sum + (i.dealValue || 0), 0);
 
                         return (
-                            <div key={column.id} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col bg-gray-50/50 rounded-xl border h-full max-h-[calc(100vh-200px)]">
+                            <div key={column.id} className="w-[72vw] sm:w-80 flex-shrink-0 flex flex-col bg-gray-50/50 rounded-xl border h-full max-h-[calc(100vh-200px)]">
                                 {/* Column Header */}
-                                <div className={`p-4 rounded-t-xl border-b flex justify-between items-start ${column.color}`}>
+                                <div className={`p-3 sm:p-4 rounded-t-xl border-b flex justify-between items-start ${column.color}`}>
                                     <div className="min-w-0 overflow-hidden">
                                         <h3 className="font-bold text-gray-700 truncate">{column.title}</h3>
                                         <p className="text-xs text-gray-500 mt-1">{columnInquiries.length} leads</p>
@@ -115,7 +115,7 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
                                         <div
                                             {...provided.droppableProps}
                                             ref={provided.innerRef}
-                                            className={`p-3 flex-1 overflow-y-auto space-y-3 transition-colors ${snapshot.isDraggingOver ? 'bg-slate-100' : ''}`}
+                                            className={`p-2 sm:p-3 flex-1 overflow-y-auto space-y-2 sm:space-y-3 transition-colors ${snapshot.isDraggingOver ? 'bg-slate-100' : ''}`}
                                         >
                                             {columnInquiries.map((inquiry, index) => (
                                                 <Draggable key={inquiry.id} draggableId={inquiry.id} index={index}>
@@ -132,8 +132,8 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
                                                                                 'border-l-red-400'
                                                                 }`}
                                                         >
-                                                            <CardContent className="p-3">
-                                                                <div className="flex justify-between items-start mb-2">
+                                                            <CardContent className="p-2 sm:p-3">
+                                                                <div className="flex justify-between items-start mb-1 sm:mb-2">
                                                                     <span className="font-medium text-sm truncate w-3/4">{inquiry.name}</span>
                                                                     <DropdownMenu>
                                                                         <DropdownMenuTrigger asChild>
@@ -150,9 +150,9 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
                                                                     </DropdownMenu>
                                                                 </div>
 
-                                                                <p className="text-xs text-gray-500 mb-2 truncate">{inquiry.product_interest}</p>
+                                                                <p className="text-xs text-gray-500 mb-1 sm:mb-2 truncate">{inquiry.product_interest}</p>
 
-                                                                <div className="flex flex-wrap gap-1 mb-2">
+                                                                <div className="flex flex-wrap gap-1 mb-1 sm:mb-2">
                                                                     {inquiry.labels?.map((label, i) => (
                                                                         <Badge key={i} variant="secondary" className="text-[10px] px-1 h-5 gap-1">
                                                                             {label}
@@ -169,7 +169,7 @@ const AdminPipeline = ({ inquiries, onUpdateStatus, onUpdateLabels, onDelete, on
                                                                     </Button>
                                                                 </div>
 
-                                                                <div className="flex justify-between items-center pt-2 border-t mt-2">
+                                                                <div className="flex justify-between items-center pt-1.5 mt-1.5 sm:pt-2 sm:mt-2 border-t">
                                                                     <span className="text-xs font-bold text-gray-700">₹{(inquiry.dealValue || 0).toLocaleString()}</span>
                                                                     <span className="text-[10px] text-gray-400">{new Date(inquiry.created_at).toLocaleDateString()}</span>
                                                                 </div>
