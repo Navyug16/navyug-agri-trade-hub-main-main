@@ -15,11 +15,12 @@ interface AdminNavigationProps {
   pendingInquiries: number;
   onLogout: () => void;
   adminName?: string;
+  adminEmail?: string;
   className?: string;
   onClose?: () => void;
 }
 
-const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, adminName, className, onClose }: AdminNavigationProps) => {
+const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, adminName, adminEmail, className, onClose }: AdminNavigationProps) => {
   const handleTabClick = (tab: 'overview' | 'inquiries' | 'products' | 'blogs' | 'pipeline') => {
     onTabChange(tab);
     if (onClose) onClose();
@@ -114,7 +115,7 @@ const AdminNavigation = ({ activeTab, onTabChange, pendingInquiries, onLogout, a
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">{adminName || 'Admin'}</p>
-            <p className="text-xs text-gray-500 truncate">admin@navyug.com</p>
+            <p className="text-xs text-gray-500 truncate">{adminEmail || 'admin@navyug.com'}</p>
           </div>
         </div>
         <Link to="/">

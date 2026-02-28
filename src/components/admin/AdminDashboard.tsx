@@ -413,7 +413,7 @@ const ProductDialogForm = ({
 import AddInquiryDialog from './AddInquiryDialog';
 
 const AdminDashboard = () => {
-  const { admin, logout } = useAdminAuth();
+  const { admin, logout, loading: authLoading } = useAdminAuth();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -476,8 +476,10 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (!authLoading && admin) {
+      fetchData();
+    }
+  }, [admin, authLoading]);
 
   const fetchData = async () => {
     try {
@@ -778,7 +780,9 @@ const AdminDashboard = () => {
 
 
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (authLoading) return <div className="flex items-center justify-center min-h-screen">Verifying Auth...</div>;
+  if (!admin) return <div className="flex items-center justify-center min-h-screen">Unauthorized access. Please login.</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading dashboard data...</div>;
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
@@ -790,6 +794,7 @@ const AdminDashboard = () => {
           pendingInquiries={stats.pendingInquiries}
           onLogout={logout}
           adminName={admin?.name}
+          adminEmail={admin?.email}
         />
       </div>
 
